@@ -83,13 +83,13 @@ contract CozySwapPair {
     uint112 private reserve1;
     uint32 private blockTimestampLast;
     
-    // ERC20 Variables - RENAMED untuk avoid shadowing
-    string public constant pairName = "CozySwap Pair";
-    string public constant pairSymbol = "COZY-LP";
-    uint8 public constant pairDecimals = 18;
-    uint256 public totalLPSupply;
-    mapping(address => uint256) public lpBalanceOf;
-    mapping(address => mapping(address => uint256)) public lpAllowance;
+    // ERC20 Variables
+    string public constant name = "CozySwap Pair";
+    string public constant symbol = "COZY-LP";
+    uint8 public constant decimals = 18;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
     
     event Mint(address indexed sender, uint256 amount0, uint256 amount1);
     event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to);
@@ -131,93 +131,87 @@ contract CozySwapPair {
         emit Sync(reserve0, reserve1);
     }
     
-    // ✅ FIXED: Parameter names berbeda dari state variables
-    function _calculateLiquidityAmount(
+    // FIXED: Simplified liquidity calculation
+    function _calculateLiquidity(
         uint256 _amount0, 
         uint256 _amount1, 
-        uint112 _reserveA,  // Ganti nama parameter
-        uint112 _reserveB   // Ganti nama parameter
+        uint112 _reserveA, 
+        uint112 _reserveB
     ) internal view returns (uint256 liquidity) {
         if (_reserveA == 0 && _reserveB == 0) {
             liquidity = _sqrt(_amount0 * _amount1);
         } else {
-            uint256 liquidity0 = (_amount0 * totalLPSupply) / _reserveA;
-            uint256 liquidity1 = (_amount1 * totalLPSupply) / _reserveB;
+            uint256 liquidity0 = (_amount0 * totalSupply) / _reserveA;
+            uint256 liquidity1 = (_amount1 * totalSupply) / _reserveB;
             liquidity = liquidity0 < liquidity1 ? liquidity0 : liquidity1;
         }
     }
     
     function mint(address to) external onlyFactory returns (uint256 liquidity) {
-        (uint112 currentReserve0, uint112 currentReserve1,) = getReserves(); // Ganti nama variable
+        (uint112 reserveA, uint112 reserveB,) = getReserves();
         uint256 balance0 = IERC20(token0).balanceOf(address(this));
         uint256 balance1 = IERC20(token1).balanceOf(address(this));
-        uint256 amount0 = balance0 - currentReserve0;
-        uint256 amount1 = balance1 - currentReserve1;
+        uint256 amount0 = balance0 - reserveA;
+        uint256 amount1 = balance1 - reserveB;
         
-        // ✅ FIXED: Panggil dengan parameter yang sudah diganti nama
-        liquidity = _calculateLiquidityAmount(amount0, amount1, currentReserve0, currentReserve1);
+        liquidity = _calculateLiquidity(amount0, amount1, reserveA, reserveB);
         require(liquidity > 0, "CozySwap: INSUFFICIENT_LIQUIDITY_MINTED");
         
-        _mintLP(to, liquidity);
-        _update(balance0, balance1, currentReserve0, currentReserve1);
+        _mint(to, liquidity);
+        _update(balance0, balance1, reserveA, reserveB);
         emit Mint(msg.sender, amount0, amount1);
     }
     
     function burn(address to) external onlyFactory returns (uint256 amount0, uint256 amount1) {
-        (uint112 currentReserve0, uint112 currentReserve1,) = getReserves(); // Ganti nama variable
-        address _token0 = token0;
-        address _token1 = token1;
-        uint256 balance0 = IERC20(_token0).balanceOf(address(this));
-        uint256 balance1 = IERC20(_token1).balanceOf(address(this));
-        uint256 liquidity = lpBalanceOf[address(this)];
+        (uint112 reserveA, uint112 reserveB,) = getReserves();
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+        uint256 _liquidity = balanceOf[address(this)];
         
-        amount0 = (liquidity * balance0) / totalLPSupply;
-        amount1 = (liquidity * balance1) / totalLPSupply;
+        amount0 = (_liquidity * balance0) / totalSupply;
+        amount1 = (_liquidity * balance1) / totalSupply;
         require(amount0 > 0 && amount1 > 0, "CozySwap: INSUFFICIENT_LIQUIDITY_BURNED");
         
-        _burnLP(address(this), liquidity);
-        _safeTransfer(_token0, to, amount0);
-        _safeTransfer(_token1, to, amount1);
+        _burn(address(this), _liquidity);
+        _safeTransfer(token0, to, amount0);
+        _safeTransfer(token1, to, amount1);
         
-        balance0 = IERC20(_token0).balanceOf(address(this));
-        balance1 = IERC20(_token1).balanceOf(address(this));
+        balance0 = IERC20(token0).balanceOf(address(this));
+        balance1 = IERC20(token1).balanceOf(address(this));
         
-        _update(balance0, balance1, currentReserve0, currentReserve1);
+        _update(balance0, balance1, reserveA, reserveB);
         emit Burn(msg.sender, amount0, amount1, to);
     }
     
+    // FIXED: Swap function dengan reduced variables
     function swap(uint256 amount0Out, uint256 amount1Out, address to, bytes calldata data) external onlyFactory {
         require(amount0Out > 0 || amount1Out > 0, "CozySwap: INSUFFICIENT_OUTPUT_AMOUNT");
-        (uint112 currentReserve0, uint112 currentReserve1,) = getReserves(); // Ganti nama variable
-        require(amount0Out < currentReserve0 && amount1Out < currentReserve1, "CozySwap: INSUFFICIENT_LIQUIDITY");
+        (uint112 _reserve0, uint112 _reserve1,) = getReserves();
+        require(amount0Out < _reserve0 && amount1Out < _reserve1, "CozySwap: INSUFFICIENT_LIQUIDITY");
         
-        uint256 balance0;
-        uint256 balance1;
-        {
-            address _token0 = token0;
-            address _token1 = token1;
-            require(to != _token0 && to != _token1, "CozySwap: INVALID_TO");
-            
-            if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out);
-            if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out);
-            if (data.length > 0) ICozySwapCallee(to).cozySwapCall(msg.sender, amount0Out, amount1Out, data);
-            
-            balance0 = IERC20(_token0).balanceOf(address(this));
-            balance1 = IERC20(_token1).balanceOf(address(this));
-        }
+        // FIXED: Kurangi local variables dengan langsung menggunakan values
+        require(to != token0 && to != token1, "CozySwap: INVALID_TO");
         
-        uint256 amount0In = balance0 > currentReserve0 - amount0Out ? balance0 - (currentReserve0 - amount0Out) : 0;
-        uint256 amount1In = balance1 > currentReserve1 - amount1Out ? balance1 - (currentReserve1 - amount1Out) : 0;
+        if (amount0Out > 0) _safeTransfer(token0, to, amount0Out);
+        if (amount1Out > 0) _safeTransfer(token1, to, amount1Out);
+        if (data.length > 0) ICozySwapCallee(to).cozySwapCall(msg.sender, amount0Out, amount1Out, data);
+        
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+        
+        // FIXED: Calculate amounts langsung tanpa variables tambahan
+        uint256 amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
+        uint256 amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, "CozySwap: INSUFFICIENT_INPUT_AMOUNT");
         
-        uint256 balance0Adjusted = balance0 * 1000 - (amount0In * 2);
-        uint256 balance1Adjusted = balance1 * 1000 - (amount1In * 2);
+        // FIXED: Simplified fee calculation langsung di require
         require(
-            balance0Adjusted * balance1Adjusted >= uint256(currentReserve0) * currentReserve1 * 1000**2,
+            (balance0 * 1000 - (amount0In * 2)) * (balance1 * 1000 - (amount1In * 2)) >= 
+            uint256(_reserve0) * _reserve1 * 1000**2,
             "CozySwap: K"
         );
         
-        _update(balance0, balance1, currentReserve0, currentReserve1);
+        _update(balance0, balance1, _reserve0, _reserve1);
         emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
     
@@ -239,37 +233,37 @@ contract CozySwapPair {
         }
     }
     
-    function _mintLP(address to, uint256 value) internal {
-        totalLPSupply += value;
-        lpBalanceOf[to] += value;
+    function _mint(address to, uint256 value) internal {
+        totalSupply += value;
+        balanceOf[to] += value;
         emit Transfer(address(0), to, value);
     }
     
-    function _burnLP(address from, uint256 value) internal {
-        lpBalanceOf[from] -= value;
-        totalLPSupply -= value;
+    function _burn(address from, uint256 value) internal {
+        balanceOf[from] -= value;
+        totalSupply -= value;
         emit Transfer(from, address(0), value);
     }
     
     function approve(address spender, uint256 value) external returns (bool) {
-        lpAllowance[msg.sender][spender] = value;
+        allowance[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;
     }
     
     function transfer(address to, uint256 value) external returns (bool) {
-        lpBalanceOf[msg.sender] -= value;
-        lpBalanceOf[to] += value;
+        balanceOf[msg.sender] -= value;
+        balanceOf[to] += value;
         emit Transfer(msg.sender, to, value);
         return true;
     }
     
     function transferFrom(address from, address to, uint256 value) external returns (bool) {
-        if (lpAllowance[from][msg.sender] != type(uint256).max) {
-            lpAllowance[from][msg.sender] -= value;
+        if (allowance[from][msg.sender] != type(uint256).max) {
+            allowance[from][msg.sender] -= value;
         }
-        lpBalanceOf[from] -= value;
-        lpBalanceOf[to] += value;
+        balanceOf[from] -= value;
+        balanceOf[to] += value;
         emit Transfer(from, to, value);
         return true;
     }
