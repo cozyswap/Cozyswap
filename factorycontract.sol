@@ -94,7 +94,7 @@ interface ICozySwapPair {
     function initialize(address, address) external;
 }
 
-// CozySwap Pair Contract
+// CozySwap Pair Contract - FIXED VERSION
 contract CozySwapPair {
     // Public variables
     address public factory;
@@ -161,7 +161,7 @@ contract CozySwapPair {
         uint256 amount0 = balance0 - _reserve0;
         uint256 amount1 = balance1 - _reserve1;
         
-        // Calculate liquidity (simplified)
+        // Calculate liquidity - FIXED: pindah ke internal function
         liquidity = _calculateLiquidity(amount0, amount1, _reserve0, _reserve1);
         require(liquidity > 0, "CozySwap: INSUFFICIENT_LIQUIDITY_MINTED");
         
@@ -237,14 +237,14 @@ contract CozySwapPair {
     
     // === INTERNAL FUNCTIONS ===
     
-    // Calculate liquidity amount
+    // Calculate liquidity amount - FIXED: internal pure function
     function _calculateLiquidity(uint256 amount0, uint256 amount1, uint112 reserve0, uint112 reserve1) 
-        private pure returns (uint256 liquidity) 
+        internal pure returns (uint256 liquidity) 
     {
         if (reserve0 == 0 && reserve1 == 0) {
-            liquidity = sqrt(amount0 * amount1);
+            liquidity = _sqrt(amount0 * amount1);
         } else {
-            liquidity = min((amount0 * totalSupply) / reserve0, (amount1 * totalSupply) / reserve1);
+            liquidity = _min((amount0 * totalSupply) / reserve0, (amount1 * totalSupply) / reserve1);
         }
     }
     
@@ -254,8 +254,8 @@ contract CozySwapPair {
         require(success && (data.length == 0 || abi.decode(data, (bool))), "CozySwap: TRANSFER_FAILED");
     }
     
-    // Math functions
-    function sqrt(uint256 y) internal pure returns (uint256 z) {
+    // Math functions - FIXED: internal pure
+    function _sqrt(uint256 y) internal pure returns (uint256 z) {
         if (y > 3) {
             z = y;
             uint256 x = y / 2 + 1;
@@ -268,7 +268,7 @@ contract CozySwapPair {
         }
     }
     
-    function min(uint256 x, uint256 y) internal pure returns (uint256) {
+    function _min(uint256 x, uint256 y) internal pure returns (uint256) {
         return x < y ? x : y;
     }
     
