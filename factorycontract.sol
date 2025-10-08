@@ -131,7 +131,6 @@ contract CozySwapPair {
         emit Sync(reserve0, reserve1);
     }
     
-    // FIXED: Simplified liquidity calculation
     function _calculateLiquidity(
         uint256 _amount0, 
         uint256 _amount1, 
@@ -183,36 +182,74 @@ contract CozySwapPair {
         emit Burn(msg.sender, amount0, amount1, to);
     }
     
-    // FIXED: Swap function dengan reduced variables
+    // FIXED: Swap function dengan split logic
     function swap(uint256 amount0Out, uint256 amount1Out, address to, bytes calldata data) external onlyFactory {
         require(amount0Out > 0 || amount1Out > 0, "CozySwap: INSUFFICIENT_OUTPUT_AMOUNT");
         (uint112 _reserve0, uint112 _reserve1,) = getReserves();
         require(amount0Out < _reserve0 && amount1Out < _reserve1, "CozySwap: INSUFFICIENT_LIQUIDITY");
         
-        // FIXED: Kurangi local variables dengan langsung menggunakan values
+        // Execute transfers
+        _executeTransfers(amount0Out, amount1Out, to, data);
+        
+        // Get balances after transfer
+        uint256 balance0 = IERC20(token0).balanceOf(address(this));
+        uint256 balance1 = IERC20(token1).balanceOf(address(this));
+        
+        // Calculate input amounts
+        (uint256 amount0In, uint256 amount1In) = _calculateInputAmounts(
+            balance0, 
+            balance1, 
+            _reserve0, 
+            _reserve1, 
+            amount0Out, 
+            amount1Out
+        );
+        
+        // Validate swap
+        _validateSwap(balance0, balance1, amount0In, amount1In, _reserve0, _reserve1);
+        
+        _update(balance0, balance1, _reserve0, _reserve1);
+        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
+    }
+    
+    // Split function 1: Execute transfers
+    function _executeTransfers(uint256 amount0Out, uint256 amount1Out, address to, bytes calldata data) private {
         require(to != token0 && to != token1, "CozySwap: INVALID_TO");
         
         if (amount0Out > 0) _safeTransfer(token0, to, amount0Out);
         if (amount1Out > 0) _safeTransfer(token1, to, amount1Out);
         if (data.length > 0) ICozySwapCallee(to).cozySwapCall(msg.sender, amount0Out, amount1Out, data);
-        
-        uint256 balance0 = IERC20(token0).balanceOf(address(this));
-        uint256 balance1 = IERC20(token1).balanceOf(address(this));
-        
-        // FIXED: Calculate amounts langsung tanpa variables tambahan
-        uint256 amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
-        uint256 amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
+    }
+    
+    // Split function 2: Calculate input amounts
+    function _calculateInputAmounts(
+        uint256 balance0,
+        uint256 balance1,
+        uint112 _reserve0,
+        uint112 _reserve1,
+        uint256 amount0Out,
+        uint256 amount1Out
+    ) private pure returns (uint256 amount0In, uint256 amount1In) {
+        amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
+        amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, "CozySwap: INSUFFICIENT_INPUT_AMOUNT");
-        
-        // FIXED: Simplified fee calculation langsung di require
+    }
+    
+    // Split function 3: Validate swap with fee calculation
+    function _validateSwap(
+        uint256 balance0,
+        uint256 balance1,
+        uint256 amount0In,
+        uint256 amount1In,
+        uint112 _reserve0,
+        uint112 _reserve1
+    ) private pure {
+        uint256 balance0Adjusted = balance0 * 1000 - (amount0In * 2);
+        uint256 balance1Adjusted = balance1 * 1000 - (amount1In * 2);
         require(
-            (balance0 * 1000 - (amount0In * 2)) * (balance1 * 1000 - (amount1In * 2)) >= 
-            uint256(_reserve0) * _reserve1 * 1000**2,
+            balance0Adjusted * balance1Adjusted >= uint256(_reserve0) * _reserve1 * 1000**2,
             "CozySwap: K"
         );
-        
-        _update(balance0, balance1, _reserve0, _reserve1);
-        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
     
     function _safeTransfer(address token, address to, uint256 value) private {
