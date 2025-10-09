@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozySwap DApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #10B981;
+            --dark: #1F2937;
+            --darker: #111827;
+            --light: #F9FAFB;
+            --gray: #6B7280;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--dark);
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .connect-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .connect-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+        }
+
+        .wallet-address {
+            font-size: 0.9rem;
+        }
+
+        .network-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--dark);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 1rem;
+            color: var(--light);
+            font-size: 1.25rem;
+        }
+
+        .swap-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .token-input {
+            background-color: var(--darker);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--gray);
+        }
+
+        .token-input-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .token-input-header span {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .token-input-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .token-input-body input {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            width: 70%;
+            outline: none;
+        }
+
+        .token-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .token-selector img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .swap-arrow {
+            display: flex;
+            justify-content: center;
+            margin: -0.5rem 0;
+        }
+
+        .swap-arrow button {
+            background-color: var(--dark);
+            border: 1px solid var(--gray);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--light);
+            transition: all 0.3s;
+        }
+
+        .swap-arrow button:hover {
+            background-color: var(--primary);
+        }
+
+        .slippage-settings {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .slippage-settings input {
+            background-color: var(--darker);
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            padding: 0.3rem;
+            color: var(--light);
+            width: 60px;
+        }
+
+        .swap-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .swap-btn:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+        }
+
+        .swap-btn:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .pool-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Liquidity and Staking */
+        .liquidity-pool, .staking-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .pool-item {
+            background-color: var(--darker);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pool-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pool-tokens {
+            display: flex;
+        }
+
+        .pool-token {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+            margin-right: -10px;
+        }
+
+        .pool-name {
+            font-weight: 600;
+        }
+
+        .pool-apr {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .add-liquidity-btn, .stake-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-liquidity-btn:hover, .stake-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Liquidity Form */
+        .liquidity-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .liquidity-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--light);
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--dark);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .token-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .token-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .token-item:hover {
+            background-color: var(--darker);
+        }
+
+        .token-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .token-details {
+            flex: 1;
+        }
+
+        .token-name {
+            font-weight: 500;
+        }
+
+        .token-symbol {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Import Token Form */
+        .import-token-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .form-group input {
+            background-color: var(--darker);
+            border: 1px solid var(--gray);
+            border-radius: 6px;
+            padding: 0.8rem;
+            color: var(--light);
+        }
+
+        .warning-box {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .warning-box h4 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-box p {
+            font-size: 0.9rem;
+            color: var(--light);
+        }
+
+        /* Transaction History */
+        .transaction-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .transaction-type {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+        }
+
+        .transaction-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .liquidity-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="CozySwap Logo">
+                    <h1>CozySwap</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Swap</a></li>
+                        <li><a href="#" data-tab="liquidity">Liquidity</a></li>
+                        <li><a href="#" data-tab="staking">Staking</a></li>
+                        <li><a href="#" data-tab="transactions">Transactions</a></li>
+                    </ul>
+                </nav>
+                <div class="wallet-section">
+                    <div class="network-indicator">
+                        <i class="fas fa-circle"></i>
+                        <span>Plasma Chain</span>
+                    </div>
+                    <button class="connect-btn" id="connectWallet">Connect Wallet</button>
+                    <div class="wallet-info" id="walletInfo" style="display: none;">
+                        <i class="fas fa-wallet"></i>
+                        <span class="wallet-address" id="walletAddress"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="dashboard">
+                <div class="card">
+                    <h2>Swap</h2>
+                    <div class="swap-container">
+                        <div class="token-input">
+                            <div class="token-input-header">
+                                <span>From</span>
+                                <span>Balance: <span id="fromBalance">0.0</span></span>
+                            </div>
+                            <div class="token-input-body">
+                                <input type="number" placeholder="0.0" id="fromAmount">
+                                <div class="token-selector" id="fromTokenSelector">
+                                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" id="fromTokenIcon">
+                                    <span id="fromTokenSymbol">ETH</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swap-arrow">
+                            <button id="switchTokens">
+                                <i class="fas fa-arrow-down-arrow-up"></i>
+                            </button>
+                        </div>
+
+                        <div class="token-input">
+                            <div class="token-input-header">
+                                <span>To</span>
+                                <span>Balance: <span id="toBalance">0.0</span></span>
+                            </div>
+                            <div class="token-input-body">
+                                <input type="number" placeholder="0.0" id="toAmount" readonly>
+                                <div class="token-selector" id="toTokenSelector">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" id="toTokenIcon">
+                                    <span id="toTokenSymbol">COZY</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slippage-settings">
+                            <span>Slippage Tolerance:</span>
+                            <input type="number" id="slippage" value="0.5" min="0.1" max="5" step="0.1">
+                            <span>%</span>
+                        </div>
+
+                        <button class="swap-btn" id="swapButton" disabled>Connect Wallet</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Pool Statistics</h2>
+                    <div class="pool-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Value Locked</span>
+                            <span class="stat-value">$1,245,890</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value">$324,567</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">COZY Price</span>
+                            <span class="stat-value">$0.0245</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">APR</span>
+                            <span class="stat-value">124.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="liquidity">Liquidity Pools</div>
+                <div class="tab" data-tab="staking">Staking Pools</div>
+                <div class="tab" data-tab="transactions">Transaction History</div>
+            </div>
+
+            <div class="tab-content active" id="liquidity-content">
+                <div class="card">
+                    <h2>Liquidity Pools</h2>
+                    <div class="liquidity-pool">
+                        <div class="pool-item">
+                            <div class="pool-info">
+                                <div class="pool-tokens">
+                                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" class="pool-token">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" class="pool-token">
+                                </div>
+                                <div>
+                                    <div class="pool-name">ETH-COZY</div>
+                                    <div class="pool-apr">APR: 45.2%</div>
+                                </div>
+                            </div>
+                            <button class="add-liquidity-btn" data-pool="ETH-COZY">Add Liquidity</button>
+                        </div>
+                        <div class="pool-item">
+                            <div class="pool-info">
+                                <div class="pool-tokens">
+                                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" class="pool-token">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" class="pool-token">
+                                </div>
+                                <div>
+                                    <div class="pool-name">USDT-COZY</div>
+                                    <div class="pool-apr">APR: 38.7%</div>
+                                </div>
+                            </div>
+                            <button class="add-liquidity-btn" data-pool="USDT-COZY">Add Liquidity</button>
+                        </div>
+                        <div class="pool-item">
+                            <div class="pool-info">
+                                <div class="pool-tokens">
+                                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="WBTC" class="pool-token">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" class="pool-token">
+                                </div>
+                                <div>
+                                    <div class="pool-name">WBTC-COZY</div>
+                                    <div class="pool-apr">APR: 52.1%</div>
+                                </div>
+                            </div>
+                            <button class="add-liquidity-btn" data-pool="WBTC-COZY">Add Liquidity</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="staking-content">
+                <div class="card">
+                    <h2>Staking Pools</h2>
+                    <div class="staking-pool">
+                        <div class="pool-item">
+                            <div class="pool-info">
+                                <div class="pool-tokens">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" class="pool-token">
+                                </div>
+                                <div>
+                                    <div class="pool-name">COZY Staking</div>
+                                    <div class="pool-apr">APR: 124.5%</div>
+                                </div>
+                            </div>
+                            <button class="stake-btn">Stake</button>
+                        </div>
+                        <div class="pool-item">
+                            <div class="pool-info">
+                                <div class="pool-tokens">
+                                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" class="pool-token">
+                                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY" class="pool-token">
+                                </div>
+                                <div>
+                                    <div class="pool-name">ETH-COZY LP Staking</div>
+                                    <div class="pool-apr">APR: 245.8%</div>
+                                </div>
+                            </div>
+                            <button class="stake-btn">Stake</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="transactions-content">
+                <div class="card">
+                    <h2>Transaction History</h2>
+                    <div class="transaction-history" id="transactionHistory">
+                        <!-- Transaction items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="CozySwap Logo">
+                    <h1>CozySwap</h1>
+                </div>
+                <div class="social-links">
+                    <a href="https://x.com/CozySwap" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-medium"></i></a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 CozySwap. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Token Selection Modal -->
+    <div class="modal" id="tokenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Select a Token</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="token-list" id="tokenList">
+                <!-- Token items will be populated by JavaScript -->
+            </div>
+            <button class="swap-btn" id="importTokenBtn" style="margin-top: 1rem;">Import Token</button>
+        </div>
+    </div>
+
+    <!-- Import Token Modal -->
+    <div class="modal" id="importTokenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Import Token</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="import-token-form">
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Trade at your own risk!</h4>
+                    <p>Anyone can create a token, including creating fake versions of existing tokens. Please ensure you are importing the correct token address.</p>
+                </div>
+                <div class="form-group">
+                    <label for="tokenAddress">Token Address</label>
+                    <input type="text" id="tokenAddress" placeholder="0x...">
+                </div>
+                <div class="form-group">
+                    <label for="tokenSymbol">Token Symbol</label>
+                    <input type="text" id="tokenSymbol" placeholder="SYMBOL">
+                </div>
+                <div class="form-group">
+                    <label for="tokenDecimals">Token Decimals</label>
+                    <input type="number" id="tokenDecimals" placeholder="18" value="18">
+                </div>
+                <button class="swap-btn" id="confirmImportBtn">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Liquidity Modal -->
+    <div class="modal" id="liquidityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="liquidityModalTitle">Add Liquidity</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="liquidity-form">
+                <div class="liquidity-inputs">
+                    <div class="token-input">
+                        <div class="token-input-header">
+                            <span id="liquidityToken1Name">ETH</span>
+                            <span>Balance: <span id="liquidityBalance1">0.0</span></span>
+                        </div>
+                        <div class="token-input-body">
+                            <input type="number" placeholder="0.0" id="liquidityAmount1">
+                            <div class="token-selector">
+                                <span id="liquidityToken1Symbol">ETH</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="token-input">
+                        <div class="token-input-header">
+                            <span id="liquidityToken2Name">COZY</span>
+                            <span>Balance: <span id="liquidityBalance2">0.0</span></span>
+                        </div>
+                        <div class="token-input-body">
+                            <input type="number" placeholder="0.0" id="liquidityAmount2">
+                            <div class="token-selector">
+                                <span id="liquidityToken2Symbol">COZY</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="swap-btn" id="addLiquidityBtn">Add Liquidity</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== KONFIGURASI JARINGAN DAN KONTRAK ==========
+        const NETWORK_CONFIG = {
+            chainId: '0x2609', // 9745 in hex
+            chainName: 'Plasma Chain',
+            rpcUrls: ['https://rpc.plasma.to'],
+            blockExplorerUrls: ['https://plasmascan.to/'],
+            nativeCurrency: {
+                name: 'ETH',
+                symbol: 'ETH',
+                decimals: 18
+            }
+        };
+
+        // Alamat kontrak
+        const CONTRACT_ADDRESSES = {
+            cozyToken: '0x06e2ef46662834f4e42dbf9ff9222b077c57df5c',
+            factory: '0xa252e44D3478CeBb1a3D59C9146CD860cb09Ec93',
+            router: '0x89E695B38610e78a77Fb310458Dfd855505AD239',
+            staking: '0x5Be32ac6F285e9DA3Dab9817ED15b06852a909C2',
+            wxpl: '0x6100E367285b01F48D07953803A2d8dCA5D19873'
+        };
+
+        // ========== ABI KONTRAK ==========
+        // SILAKAN ISI ABI MANUAL DI SINI
+
+        // ABI untuk Router
+        const ROUTER_ABI = [
+            // SILAKAN TAMBAHKAN ABI ROUTER DI SINI
+        ];
+
+        // ABI untuk Factory
+        const FACTORY_ABI = [
+            // SILAKAN TAMBAHKAN ABI FACTORY DI SINI
+        ];
+
+        // ABI untuk Token COZY
+        const COZY_TOKEN_ABI = [
+            // SILAKAN TAMBAHKAN ABI COZY TOKEN DI SINI
+        ];
+
+        // ABI untuk Staking
+        const STAKING_ABI = [
+            // SILAKAN TAMBAHKAN ABI STAKING DI SINI
+        ];
+
+        // ABI untuk ERC20 umum
+        const ERC20_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)",
+            "function name() view returns (string)",
+            "function approve(address spender, uint256 amount) returns (bool)",
+            "function allowance(address owner, address spender) view returns (uint256)"
+        ];
+
+        // ========== TOKENS YANG DIDUKUNG ==========
+        let SUPPORTED_TOKENS = [
+            {
+                symbol: 'ETH',
+                name: 'Ethereum',
+                address: null, // Native token
+                decimals: 18,
+                logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+                isImported: false
+            },
+            {
+                symbol: 'COZY',
+                name: 'Cozy Token',
+                address: CONTRACT_ADDRESSES.cozyToken,
+                decimals: 18,
+                logo: 'https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG',
+                isImported: false
+            },
+            {
+                symbol: 'USDT',
+                name: 'Tether USD',
+                address: '0x...', // Ganti dengan alamat USDT di Plasma
+                decimals: 6,
+                logo: 'https://cryptologos.cc/logos/tether-usdt-logo.png',
+                isImported: false
+            },
+            {
+                symbol: 'WBTC',
+                name: 'Wrapped Bitcoin',
+                address: '0x...', // Ganti dengan alamat WBTC di Plasma
+                decimals: 8,
+                logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                isImported: false
+            },
+            {
+                symbol: 'WXPL',
+                name: 'Wrapped XPL',
+                address: CONTRACT_ADDRESSES.wxpl,
+                decimals: 18,
+                logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', // Ganti dengan logo WXPL
+                isImported: false
+            }
+        ];
+
+        // ========== STATE APLIKASI ==========
+        let provider = null;
+        let signer = null;
+        let userAddress = null;
+        let currentNetwork = null;
+        
+        // Kontrak instances
+        let routerContract = null;
+        let factoryContract = null;
+        let cozyTokenContract = null;
+        let stakingContract = null;
+        
+        // State swap
+        let fromToken = SUPPORTED_TOKENS[0]; // ETH
+        let toToken = SUPPORTED_TOKENS[1]; // COZY
+        let isSwitchingTokens = false;
+        let currentTokenSelector = null;
+        let currentLiquidityPool = null;
+
+        // Transaction history
+        let transactionHistory = [];
+
+        // ========== INISIALISASI APLIKASI ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            checkWalletConnection();
+            loadTransactionHistory();
+        });
+
+        function initializeApp() {
+            // Inisialisasi provider
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                
+                // Cek koneksi wallet yang sudah ada
+                checkWalletConnection();
+                
+                // Listen untuk perubahan akun
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length > 0) {
+                        userAddress = accounts[0];
+                        updateWalletInfo();
+                        initializeContracts();
+                        loadTransactionHistory();
+                    } else {
+                        disconnectWallet();
+                    }
+                });
+                
+                // Listen untuk perubahan jaringan
+                window.ethereum.on('chainChanged', (chainId) => {
+                    window.location.reload();
+                });
+            } else {
+                alert('Please install MetaMask or another Web3 wallet to use this DApp');
+            }
+            
+            // Update UI dengan token yang dipilih
+            updateTokenSelectors();
+            populateTokenList();
+            
+            // Load imported tokens from localStorage
+            loadImportedTokens();
+        }
+
+        function setupEventListeners() {
+            // Wallet connection
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            
+            // Token selectors
+            document.getElementById('fromTokenSelector').addEventListener('click', () => openTokenModal('from'));
+            document.getElementById('toTokenSelector').addEventListener('click', () => openTokenModal('to'));
+            
+            // Switch tokens
+            document.getElementById('switchTokens').addEventListener('click', switchTokens);
+            
+            // Swap button
+            document.getElementById('swapButton').addEventListener('click', executeSwap);
+            
+            // Modals
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', closeAllModals);
+            });
+            
+            document.getElementById('tokenModal').addEventListener('click', (e) => {
+                if (e.target.id === 'tokenModal') closeAllModals();
+            });
+            
+            document.getElementById('importTokenModal').addEventListener('click', (e) => {
+                if (e.target.id === 'importTokenModal') closeAllModals();
+            });
+            
+            document.getElementById('liquidityModal').addEventListener('click', (e) => {
+                if (e.target.id === 'liquidityModal') closeAllModals();
+            });
+            
+            // Import token
+            document.getElementById('importTokenBtn').addEventListener('click', openImportTokenModal);
+            document.getElementById('confirmImportBtn').addEventListener('click', importToken);
+            
+            // Liquidity
+            document.querySelectorAll('.add-liquidity-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const pool = e.target.getAttribute('data-pool');
+                    openLiquidityModal(pool);
+                });
+            });
+            
+            document.getElementById('addLiquidityBtn').addEventListener('click', addLiquidity);
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                if (link.getAttribute('data-tab')) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tabId = link.getAttribute('data-tab');
+                        switchTab(tabId);
+                    });
+                }
+            });
+            
+            // Input amount changes
+            document.getElementById('fromAmount').addEventListener('input', updateSwapQuote);
+            document.getElementById('liquidityAmount1').addEventListener('input', updateLiquidityAmounts);
+        }
+
+        // ========== FUNGSI WALLET ==========
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert('Please install MetaMask to connect your wallet');
+                return;
+            }
+            
+            try {
+                // Minta akses ke akun
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                userAddress = accounts[0];
+                
+                // Cek dan switch ke jaringan yang benar
+                await checkAndSwitchNetwork();
+                
+                // Update UI
+                updateWalletInfo();
+                
+                // Inisialisasi kontrak
+                initializeContracts();
+                
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet: ' + error.message);
+            }
+        }
+
+        async function checkAndSwitchNetwork() {
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            
+            if (chainId !== NETWORK_CONFIG.chainId) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: NETWORK_CONFIG.chainId }],
+                    });
+                } catch (switchError) {
+                    // Jika jaringan tidak ada di wallet, tambahkan
+                    if (switchError.code === 4902) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [NETWORK_CONFIG],
+                            });
+                        } catch (addError) {
+                            console.error('Error adding network:', addError);
+                            alert('Failed to add Plasma Chain to your wallet');
+                        }
+                    } else {
+                        console.error('Error switching network:', switchError);
+                        alert('Failed to switch to Plasma Chain');
+                    }
+                }
+            }
+        }
+
+        function checkWalletConnection() {
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                userAddress = window.ethereum.selectedAddress;
+                updateWalletInfo();
+                initializeContracts();
+            }
+        }
+
+        function updateWalletInfo() {
+            document.getElementById('connectWallet').style.display = 'none';
+            document.getElementById('walletInfo').style.display = 'flex';
+            
+            const shortenedAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
+            document.getElementById('walletAddress').textContent = shortenedAddress;
+            
+            // Enable swap button
+            document.getElementById('swapButton').disabled = false;
+            document.getElementById('swapButton').textContent = 'Swap';
+        }
+
+        function disconnectWallet() {
+            userAddress = null;
+            document.getElementById('connectWallet').style.display = 'block';
+            document.getElementById('walletInfo').style.display = 'none';
+            document.getElementById('swapButton').disabled = true;
+            document.getElementById('swapButton').textContent = 'Connect Wallet';
+        }
+
+        // ========== FUNGSI KONTRAK ==========
+        function initializeContracts() {
+            if (!provider || !userAddress) return;
+            
+            signer = provider.getSigner();
+            
+            // Inisialisasi kontrak dengan ABI yang sesuai
+            // routerContract = new ethers.Contract(CONTRACT_ADDRESSES.router, ROUTER_ABI, signer);
+            // factoryContract = new ethers.Contract(CONTRACT_ADDRESSES.factory, FACTORY_ABI, signer);
+            // cozyTokenContract = new ethers.Contract(CONTRACT_ADDRESSES.cozyToken, COZY_TOKEN_ABI, signer);
+            // stakingContract = new ethers.Contract(CONTRACT_ADDRESSES.staking, STAKING_ABI, signer);
+            
+            // Untuk sekarang, kita hanya log
+            console.log('Contracts would be initialized with:', {
+                router: CONTRACT_ADDRESSES.router,
+                factory: CONTRACT_ADDRESSES.factory,
+                cozyToken: CONTRACT_ADDRESSES.cozyToken,
+                staking: CONTRACT_ADDRESSES.staking
+            });
+            
+            // Update token balances
+            updateTokenBalances();
+        }
+
+        async function updateTokenBalances() {
+            if (!userAddress) return;
+            
+            try {
+                // Untuk ETH balance
+                const ethBalance = await provider.getBalance(userAddress);
+                const ethBalanceFormatted = ethers.utils.formatEther(ethBalance);
+                document.getElementById('fromBalance').textContent = parseFloat(ethBalanceFormatted).toFixed(4);
+                
+                // Update balance berdasarkan token yang dipilih
+                if (fromToken.symbol === 'ETH') {
+                    document.getElementById('fromBalance').textContent = parseFloat(ethBalanceFormatted).toFixed(4);
+                }
+                
+                if (toToken.symbol === 'ETH') {
+                    document.getElementById('toBalance').textContent = parseFloat(ethBalanceFormatted).toFixed(4);
+                }
+                
+                // Untuk token COZY
+                if (fromToken.symbol === 'COZY' || toToken.symbol === 'COZY') {
+                    // Di aplikasi nyata, ini akan memanggil balanceOf dari kontrak COZY
+                    document.getElementById('fromBalance').textContent = '0.0';
+                    document.getElementById('toBalance').textContent = '0.0';
+                }
+                
+            } catch (error) {
+                console.error('Error fetching balances:', error);
+            }
+        }
+
+        // ========== FUNGSI SWAP ==========
+        function updateTokenSelectors() {
+            document.getElementById('fromTokenIcon').src = fromToken.logo;
+            document.getElementById('fromTokenSymbol').textContent = fromToken.symbol;
+            
+            document.getElementById('toTokenIcon').src = toToken.logo;
+            document.getElementById('toTokenSymbol').textContent = toToken.symbol;
+            
+            // Update balances berdasarkan token yang dipilih
+            updateTokenBalances();
+        }
+
+        function openTokenModal(selectorType) {
+            currentTokenSelector = selectorType;
+            document.getElementById('tokenModal').classList.add('active');
+        }
+
+        function openImportTokenModal() {
+            closeAllModals();
+            document.getElementById('importTokenModal').classList.add('active');
+        }
+
+        function openLiquidityModal(pool) {
+            currentLiquidityPool = pool;
+            const [token1, token2] = pool.split('-');
+            
+            document.getElementById('liquidityModalTitle').textContent = `Add ${pool} Liquidity`;
+            document.getElementById('liquidityToken1Name').textContent = token1;
+            document.getElementById('liquidityToken1Symbol').textContent = token1;
+            document.getElementById('liquidityToken2Name').textContent = token2;
+            document.getElementById('liquidityToken2Symbol').textContent = token2;
+            
+            document.getElementById('liquidityModal').classList.add('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        function populateTokenList() {
+            const tokenList = document.getElementById('tokenList');
+            tokenList.innerHTML = '';
+            
+            SUPPORTED_TOKENS.forEach(token => {
+                const tokenItem = document.createElement('div');
+                tokenItem.className = 'token-item';
+                tokenItem.innerHTML = `
+                    <img src="${token.logo}" alt="${token.symbol}" class="token-icon">
+                    <div class="token-details">
+                        <div class="token-symbol">${token.symbol} ${token.isImported ? '(Imported)' : ''}</div>
+                        <div class="token-name">${token.name}</div>
+                    </div>
+                `;
+                
+                tokenItem.addEventListener('click', () => {
+                    selectToken(token);
+                    closeAllModals();
+                });
+                
+                tokenList.appendChild(tokenItem);
+            });
+        }
+
+        async function importToken() {
+            const address = document.getElementById('tokenAddress').value;
+            const symbol = document.getElementById('tokenSymbol').value;
+            const decimals = parseInt(document.getElementById('tokenDecimals').value);
+            
+            if (!address || !symbol) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (!ethers.utils.isAddress(address)) {
+                alert('Please enter a valid token address');
+                return;
+            }
+            
+            try {
+                // Cek apakah token sudah ada
+                if (SUPPORTED_TOKENS.some(token => token.address && token.address.toLowerCase() === address.toLowerCase())) {
+                    alert('This token is already in the list');
+                    return;
+                }
+                
+                // Verifikasi token di blockchain
+                const tokenContract = new ethers.Contract(address, ERC20_ABI, provider);
+                const tokenSymbol = await tokenContract.symbol();
+                const tokenName = await tokenContract.name();
+                const tokenDecimals = await tokenContract.decimals();
+                
+                // Tambahkan token ke daftar
+                const newToken = {
+                    symbol: tokenSymbol,
+                    name: tokenName,
+                    address: address,
+                    decimals: tokenDecimals,
+                    logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', // Default logo
+                    isImported: true
+                };
+                
+                SUPPORTED_TOKENS.push(newToken);
+                
+                // Simpan ke localStorage
+                saveImportedTokens();
+                
+                // Update UI
+                populateTokenList();
+                closeAllModals();
+                
+                alert(`Token ${tokenSymbol} imported successfully!`);
+                
+            } catch (error) {
+                console.error('Error importing token:', error);
+                alert('Failed to import token. Please check the address and try again.');
+            }
+        }
+
+        function loadImportedTokens() {
+            const importedTokens = localStorage.getItem('cozySwapImportedTokens');
+            if (importedTokens) {
+                const tokens = JSON.parse(importedTokens);
+                SUPPORTED_TOKENS = SUPPORTED_TOKENS.concat(tokens);
+            }
+        }
+
+        function saveImportedTokens() {
+            const importedTokens = SUPPORTED_TOKENS.filter(token => token.isImported);
+            localStorage.setItem('cozySwapImportedTokens', JSON.stringify(importedTokens));
+        }
+
+        function selectToken(token) {
+            if (currentTokenSelector === 'from') {
+                fromToken = token;
+            } else {
+                toToken = token;
+            }
+            
+            updateTokenSelectors();
+            updateSwapQuote();
+        }
+
+        function switchTokens() {
+            isSwitchingTokens = true;
+            
+            const temp = fromToken;
+            fromToken = toToken;
+            toToken = temp;
+            
+            // Switch balance display juga
+            const fromBalance = document.getElementById('fromBalance').textContent;
+            const toBalance = document.getElementById('toBalance').textContent;
+            
+            document.getElementById('fromBalance').textContent = toBalance;
+            document.getElementById('toBalance').textContent = fromBalance;
+            
+            updateTokenSelectors();
+            
+            // Juga switch amount values jika ada
+            const fromAmount = document.getElementById('fromAmount').value;
+            const toAmount = document.getElementById('toAmount').value;
+            
+            if (fromAmount && toAmount) {
+                document.getElementById('fromAmount').value = toAmount;
+                document.getElementById('toAmount').value = fromAmount;
+            }
+            
+            isSwitchingTokens = false;
+            updateSwapQuote();
+        }
+
+        function updateSwapQuote() {
+            if (isSwitchingTokens) return;
+            
+            const fromAmount = document.getElementById('fromAmount').value;
+            
+            if (!fromAmount || parseFloat(fromAmount) <= 0) {
+                document.getElementById('toAmount').value = '';
+                return;
+            }
+            
+            // Di aplikasi nyata, ini akan memanggil router contract untuk mendapatkan quote
+            // Untuk demo, kita menggunakan rate tetap
+            let exchangeRate = 100; // 1 ETH = 100 COZY
+            
+            if (fromToken.symbol === 'COZY' && toToken.symbol === 'ETH') {
+                exchangeRate = 0.01; // 1 COZY = 0.01 ETH
+            } else if (fromToken.symbol === 'ETH' && toToken.symbol === 'COZY') {
+                exchangeRate = 100; // 1 ETH = 100 COZY
+            } else {
+                // Rate default untuk token lainnya
+                exchangeRate = 1;
+            }
+            
+            const toAmount = parseFloat(fromAmount) * exchangeRate;
+            document.getElementById('toAmount').value = toAmount.toFixed(6);
+        }
+
+        async function executeSwap() {
+            if (!userAddress) {
+                alert('Please connect your wallet first');
+                return;
+            }
+            
+            const fromAmount = document.getElementById('fromAmount').value;
+            const toAmount = document.getElementById('toAmount').value;
+            const slippage = document.getElementById('slippage').value;
+            
+            if (!fromAmount || parseFloat(fromAmount) <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            try {
+                document.getElementById('swapButton').disabled = true;
+                document.getElementById('swapButton').textContent = 'Swapping...';
+                
+                // Simulasi proses swap
+                // Di aplikasi nyata, ini akan memanggil router contract
+                setTimeout(async () => {
+                    // Tambahkan ke riwayat transaksi
+                    addTransaction({
+                        type: 'Swap',
+                        fromAmount: fromAmount,
+                        fromToken: fromToken.symbol,
+                        toAmount: toAmount,
+                        toToken: toToken.symbol,
+                        status: 'success',
+                        hash: '0x' + Math.random().toString(16).substr(2, 64),
+                        timestamp: Date.now()
+                    });
+                    
+                    alert(`Swap executed successfully!\n${fromAmount} ${fromToken.symbol} -> ${toAmount} ${toToken.symbol}`);
+                    
+                    document.getElementById('swapButton').disabled = false;
+                    document.getElementById('swapButton').textContent = 'Swap';
+                    
+                    // Reset form
+                    document.getElementById('fromAmount').value = '';
+                    document.getElementById('toAmount').value = '';
+                    
+                    // Update balances
+                    updateTokenBalances();
+                    
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error executing swap:', error);
+                
+                // Tambahkan transaksi gagal ke riwayat
+                addTransaction({
+                    type: 'Swap',
+                    fromAmount: fromAmount,
+                    fromToken: fromToken.symbol,
+                    toAmount: toAmount,
+                    toToken: toToken.symbol,
+                    status: 'failed',
+                    hash: '0x' + Math.random().toString(16).substr(2, 64),
+                    timestamp: Date.now()
+                });
+                
+                alert('Swap failed: ' + error.message);
+                
+                document.getElementById('swapButton').disabled = false;
+                document.getElementById('swapButton').textContent = 'Swap';
+            }
+        }
+
+        // ========== FUNGSI LIQUIDITY ==========
+        function updateLiquidityAmounts() {
+            const amount1 = document.getElementById('liquidityAmount1').value;
+            
+            if (!amount1 || parseFloat(amount1) <= 0) {
+                document.getElementById('liquidityAmount2').value = '';
+                return;
+            }
+            
+            // Di aplikasi nyata, ini akan menghitung berdasarkan rasio pool
+            const amount2 = parseFloat(amount1) * 100; // Contoh: 1 ETH = 100 COZY
+            document.getElementById('liquidityAmount2').value = amount2.toFixed(6);
+        }
+
+        async function addLiquidity() {
+            if (!userAddress) {
+                alert('Please connect your wallet first');
+                return;
+            }
+            
+            const amount1 = document.getElementById('liquidityAmount1').value;
+            const amount2 = document.getElementById('liquidityAmount2').value;
+            
+            if (!amount1 || !amount2 || parseFloat(amount1) <= 0 || parseFloat(amount2) <= 0) {
+                alert('Please enter valid amounts');
+                return;
+            }
+            
+            try {
+                document.getElementById('addLiquidityBtn').disabled = true;
+                document.getElementById('addLiquidityBtn').textContent = 'Adding Liquidity...';
+                
+                // Simulasi proses add liquidity
+                setTimeout(() => {
+                    // Tambahkan ke riwayat transaksi
+                    addTransaction({
+                        type: 'Add Liquidity',
+                        pool: currentLiquidityPool,
+                        amount1: amount1,
+                        token1: currentLiquidityPool.split('-')[0],
+                        amount2: amount2,
+                        token2: currentLiquidityPool.split('-')[1],
+                        status: 'success',
+                        hash: '0x' + Math.random().toString(16).substr(2, 64),
+                        timestamp: Date.now()
+                    });
+                    
+                    alert(`Liquidity added successfully to ${currentLiquidityPool} pool!`);
+                    
+                    document.getElementById('addLiquidityBtn').disabled = false;
+                    document.getElementById('addLiquidityBtn').textContent = 'Add Liquidity';
+                    
+                    // Reset form
+                    document.getElementById('liquidityAmount1').value = '';
+                    document.getElementById('liquidityAmount2').value = '';
+                    
+                    closeAllModals();
+                    
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error adding liquidity:', error);
+                alert('Failed to add liquidity: ' + error.message);
+                
+                document.getElementById('addLiquidityBtn').disabled = false;
+                document.getElementById('addLiquidityBtn').textContent = 'Add Liquidity';
+            }
+        }
+
+        // ========== FUNGSI TRANSAKSI ==========
+        function addTransaction(transaction) {
+            transactionHistory.unshift(transaction);
+            saveTransactionHistory();
+            updateTransactionHistoryUI();
+        }
+
+        function saveTransactionHistory() {
+            localStorage.setItem('cozySwapTransactionHistory', JSON.stringify(transactionHistory));
+        }
+
+        function loadTransactionHistory() {
+            const savedHistory = localStorage.getItem('cozySwapTransactionHistory');
+            if (savedHistory) {
+                transactionHistory = JSON.parse(savedHistory);
+                updateTransactionHistoryUI();
+            }
+        }
+
+        function updateTransactionHistoryUI() {
+            const historyContainer = document.getElementById('transactionHistory');
+            historyContainer.innerHTML = '';
+            
+            if (transactionHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 2rem;">No transactions yet</p>';
+                return;
+            }
+            
+            transactionHistory.forEach(tx => {
+                const txElement = document.createElement('div');
+                txElement.className = 'transaction-item';
+                
+                let content = '';
+                if (tx.type === 'Swap') {
+                    content = `
+                        <div class="transaction-type">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Swap</span>
+                        </div>
+                        <div class="transaction-amount">
+                            ${tx.fromAmount} ${tx.fromToken} → ${tx.toAmount} ${tx.toToken}
+                        </div>
+                    `;
+                } else if (tx.type === 'Add Liquidity') {
+                    content = `
+                        <div class="transaction-type">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Liquidity</span>
+                        </div>
+                        <div class="transaction-amount">
+                            ${tx.amount1} ${tx.token1} + ${tx.amount2} ${tx.token2}
+                        </div>
+                    `;
+                }
+                
+                content += `
+                    <div class="transaction-status ${tx.status === 'success' ? 'status-success' : 'status-pending'}">
+                        ${tx.status === 'success' ? 'Confirmed' : 'Failed'}
+                    </div>
+                `;
+                
+                txElement.innerHTML = content;
+                historyContainer.appendChild(txElement);
+            });
+        }
+
+        // ========== FUNGSI UI LAINNYA ==========
+        function switchTab(tabId) {
+            // Update tab aktif
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Update konten tab aktif
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-content`).classList.add('active');
+            
+            // Update navigasi
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`nav a[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        // Fungsi untuk membaca blockchain (contoh)
+        async function readBlockchainData() {
+            if (!provider) return;
+            
+            try {
+                // Contoh: Mendapatkan block terbaru
+                const blockNumber = await provider.getBlockNumber();
+                console.log('Current block number:', blockNumber);
+                
+                // Contoh: Mendapatkan balance ETH
+                if (userAddress) {
+                    const balance = await provider.getBalance(userAddress);
+                    console.log('ETH Balance:', ethers.utils.formatEther(balance));
+                }
+                
+            } catch (error) {
+                console.error('Error reading blockchain data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
