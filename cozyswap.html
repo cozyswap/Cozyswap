@@ -116,14 +116,6 @@
             font-weight: 600;
         }
 
-        .settings-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 18px;
-        }
-
         .token-input {
             background: var(--secondary);
             border-radius: 16px;
@@ -199,15 +191,10 @@
             outline: none;
         }
 
-        .token-amount::placeholder {
-            color: var(--text-secondary);
-        }
-
         .swap-arrow {
             display: flex;
             justify-content: center;
             margin: 10px 0;
-            position: relative;
         }
 
         .swap-arrow-btn {
@@ -222,40 +209,13 @@
             cursor: pointer;
             color: var(--text);
             transition: all 0.2s;
-            z-index: 2;
         }
 
         .swap-arrow-btn:hover {
             background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .swap-arrow-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--border);
-            z-index: 1;
-        }
-
-        .price-info {
-            background: var(--secondary);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
         }
 
         .slippage-settings {
-            display: none;
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border);
@@ -298,7 +258,7 @@
             text-align: center;
         }
 
-        .swap-btn {
+        .swap-btn, .add-liquidity-btn {
             width: 100%;
             background: var(--primary);
             color: white;
@@ -312,11 +272,11 @@
             margin-top: 10px;
         }
 
-        .swap-btn:hover:not(:disabled) {
+        .swap-btn:hover:not(:disabled), .add-liquidity-btn:hover:not(:disabled) {
             background: var(--primary-dark);
         }
 
-        .swap-btn:disabled {
+        .swap-btn:disabled, .add-liquidity-btn:disabled {
             background: var(--border);
             color: var(--text-secondary);
             cursor: not-allowed;
@@ -356,28 +316,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-        }
-
-        .add-liquidity-btn, .remove-liquidity-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-
-        .remove-liquidity-btn {
-            background: var(--error);
-        }
-
-        .remove-liquidity-btn:hover:not(:disabled) {
-            background: #c0392b;
         }
 
         .stake-card {
@@ -434,24 +372,12 @@
             background: var(--primary);
         }
 
-        .stake-btn:hover:not(:disabled) {
-            background: var(--primary-dark);
-        }
-
         .unstake-btn {
             background: var(--error);
         }
 
-        .unstake-btn:hover:not(:disabled) {
-            background: #c0392b;
-        }
-
         .claim-btn {
             background: var(--success);
-        }
-
-        .claim-btn:hover:not(:disabled) {
-            background: #219652;
         }
 
         .stake-input-container {
@@ -468,13 +394,6 @@
             font-size: 16px;
         }
 
-        .stake-input-label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
         .max-btn {
             background: var(--primary);
             color: white;
@@ -484,10 +403,6 @@
             font-size: 12px;
             cursor: pointer;
             margin-left: 5px;
-        }
-
-        .max-btn:hover {
-            background: var(--primary-dark);
         }
 
         .modal {
@@ -510,28 +425,6 @@
             max-width: 400px;
             padding: 20px;
             border: 1px solid var(--border);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 20px;
-            cursor: pointer;
         }
 
         .token-list {
@@ -550,51 +443,6 @@
 
         .token-item:hover {
             background: var(--secondary);
-        }
-
-        .token-info {
-            margin-left: 12px;
-        }
-
-        .token-name {
-            font-weight: 600;
-        }
-
-        .token-symbol {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .add-token-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        .add-token-input {
-            width: 100%;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            color: var(--text);
-            margin-bottom: 10px;
-        }
-
-        .add-token-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
         }
 
         .error-message {
@@ -617,16 +465,6 @@
             color: var(--success);
         }
 
-        .warning-message {
-            background: rgba(243, 156, 18, 0.2);
-            border: 1px solid var(--warning);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--warning);
-        }
-
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -646,79 +484,6 @@
         .social-link {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .social-link:hover {
-            color: var(--primary);
-        }
-
-        .liquidity-position {
-            background: var(--secondary);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-
-        .position-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .position-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .position-btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .add-btn {
-            background: var(--primary);
-            color: white;
-        }
-
-        .remove-btn {
-            background: var(--error);
-            color: white;
-        }
-
-        .no-positions {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        .transaction-status {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-        }
-
-        .transaction-pending {
-            background: rgba(243, 156, 18, 0.2);
-            border: 1px solid var(--warning);
-            color: var(--warning);
-        }
-
-        .transaction-success {
-            background: rgba(39, 174, 96, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .transaction-error {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid var(--error);
-            color: var(--error);
         }
     </style>
 </head>
@@ -747,7 +512,6 @@
             <div class="card">
                 <div class="swap-header">
                     <div class="swap-title">Swap</div>
-                    <button class="settings-btn" id="settingsBtn">⚙️</button>
                 </div>
 
                 <div class="token-input">
@@ -766,7 +530,6 @@
                 </div>
 
                 <div class="swap-arrow">
-                    <div class="swap-arrow-line"></div>
                     <button class="swap-arrow-btn" id="switchTokens">↓</button>
                 </div>
 
@@ -785,32 +548,14 @@
                     </div>
                 </div>
 
-                <div class="price-info" id="priceInfo" style="display: none;">
-                    <div class="price-row">
-                        <span>Price</span>
-                        <span id="priceValue">0</span>
-                    </div>
-                    <div class="price-row">
-                        <span>Minimum received</span>
-                        <span id="minReceived">0</span>
-                    </div>
-                    <div class="price-row">
-                        <span>Price Impact</span>
-                        <span id="priceImpact">0%</span>
-                    </div>
-                </div>
-
-                <div class="slippage-settings" id="slippageSettings">
+                <div class="slippage-settings">
                     <div class="slippage-title">Slippage Tolerance</div>
                     <div class="slippage-options">
-                        <div class="slippage-option" data-slippage="0.5">0.5%</div>
-                        <div class="slippage-option active" data-slippage="1">1%</div>
+                        <div class="slippage-option active" data-slippage="0.5">0.5%</div>
+                        <div class="slippage-option" data-slippage="1">1%</div>
                         <div class="slippage-option" data-slippage="2">2%</div>
-                        <input type="number" class="slippage-input" id="customSlippage" placeholder="Custom" min="0.1" max="50" step="0.1">
                     </div>
                 </div>
-
-                <div id="transactionStatus"></div>
 
                 <button class="swap-btn" id="swapButton" disabled>Swap</button>
             </div>
@@ -855,18 +600,7 @@
                     </div>
                 </div>
 
-                <div id="liquidityTransactionStatus"></div>
-
                 <button class="add-liquidity-btn" id="addLiquidityButton" disabled>Add Liquidity</button>
-            </div>
-
-            <div class="card">
-                <div class="swap-header">
-                    <div class="swap-title">Your Liquidity Positions</div>
-                </div>
-                <div id="liquidityPositions">
-                    <div class="no-positions">No liquidity positions found</div>
-                </div>
             </div>
         </div>
 
@@ -887,7 +621,7 @@
                 </div>
                 
                 <div class="stake-input-container">
-                    <label class="stake-input-label">Amount to Stake/Unstake:</label>
+                    <label class="stake-label">Amount to Stake:</label>
                     <input type="number" class="stake-input" id="stakeAmount" placeholder="0.0" min="0">
                     <button class="max-btn" id="maxStakeBtn">MAX</button>
                 </div>
@@ -898,33 +632,6 @@
                     <button class="stake-action-btn claim-btn" id="claimButton">Claim</button>
                 </div>
             </div>
-
-            <div class="card stake-card">
-                <div class="stake-header">
-                    <div class="stake-title">COZY-XPL LP Staking</div>
-                    <div class="stake-apr">APR: 45%</div>
-                </div>
-                <div class="stake-details">
-                    <div class="stake-label">Your Stake:</div>
-                    <div id="userLpStake">0 LP</div>
-                </div>
-                <div class="stake-details">
-                    <div class="stake-label">Pending Rewards:</div>
-                    <div id="pendingLpRewards">0 COZY</div>
-                </div>
-                
-                <div class="stake-input-container">
-                    <label class="stake-input-label">Amount to Stake/Unstake:</label>
-                    <input type="number" class="stake-input" id="stakeLpAmount" placeholder="0.0" min="0">
-                    <button class="max-btn" id="maxLpStakeBtn">MAX</button>
-                </div>
-                
-                <div class="stake-actions">
-                    <button class="stake-action-btn stake-btn" id="stakeLpButton">Stake</button>
-                    <button class="stake-action-btn unstake-btn" id="unstakeLpButton">Unstake</button>
-                    <button class="stake-action-btn claim-btn" id="claimLpButton">Claim</button>
-                </div>
-            </div>
         </div>
 
         <div class="footer">
@@ -932,7 +639,6 @@
             <div class="social-links">
                 <a href="https://x.com/CozySwap" class="social-link" target="_blank">Twitter</a>
                 <a href="https://plasmascan.to/" class="social-link" target="_blank">Explorer</a>
-                <a href="#" class="social-link">Docs</a>
             </div>
         </div>
     </div>
@@ -940,25 +646,14 @@
     <!-- Token Selection Modal -->
     <div class="modal" id="tokenModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Select a token</div>
-                <button class="close-modal" id="closeTokenModal">×</button>
-            </div>
             <div class="token-list" id="tokenList">
                 <!-- Token items will be populated here -->
-            </div>
-            <div class="add-token-section">
-                <h3>Add Custom Token</h3>
-                <input type="text" class="add-token-input" id="customTokenAddress" placeholder="Token Address">
-                <input type="text" class="add-token-input" id="customTokenSymbol" placeholder="Token Symbol">
-                <input type="number" class="add-token-input" id="customTokenDecimals" placeholder="Decimals" min="0" max="18">
-                <button class="add-token-btn" id="addCustomTokenBtn">Add Token</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Konfigurasi jaringan dan kontrak
+        // Konfigurasi
         const PLASMA_CHAIN_ID = 9745;
         const RPC_URL = 'https://rpc.plasma.to';
         const COZY_TOKEN_ADDRESS = '0x06e2ef46662834f4e42dbf9ff9222b077c57df5c';
@@ -966,120 +661,84 @@
         const STAKING_ADDRESS = '0x5Be32ac6F285e9DA3Dab9817ED15b06852a909C2';
         const WXPL_ADDRESS = '0x6100E367285b01F48D07953803A2d8dCA5D19873';
 
-        // ABI kontrak
+        // ABI yang lebih sederhana
         const ERC20_ABI = [
             "function balanceOf(address) view returns (uint256)",
             "function allowance(address, address) view returns (uint256)",
             "function approve(address, uint256) returns (bool)",
-            "function transfer(address, uint256) returns (bool)",
             "function decimals() view returns (uint8)",
-            "function symbol() view returns (string)",
-            "function name() view returns (string)",
-            "function totalSupply() view returns (uint256)"
+            "function symbol() view returns (string)"
         ];
 
         const ROUTER_ABI = [
             "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-            "function getAmountsIn(uint amountOut, address[] memory path) public view returns (uint[] memory amounts)",
             "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
             "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
-            "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
             "function addLiquidityETH(address token, uint amountTokenDesired, uint amountTokenMin, uint amountETHMin, address to, uint deadline) external payable returns (uint amountToken, uint amountETH, uint liquidity)",
-            "function removeLiquidityETH(address token, uint liquidity, uint amountTokenMin, uint amountETHMin, address to, uint deadline) external returns (uint amountToken, uint amountETH)",
-            "function WETH() external pure returns (address)",
-            "function factory() external view returns (address)"
+            "function WETH() external pure returns (address)"
         ];
 
-        const STAKING_ABI = [
-            "function deposit(uint256 _pid, uint256 _amount, uint256 _lockPeriod) external",
-            "function withdraw(uint256 _pid, uint256 _amount) external",
-            "function claimRewards(uint256 _pid) external",
-            "function pendingRewards(uint256 _pid, address _user) external view returns (uint256)",
-            "function getUserStake(uint256 _pid, address _user) external view returns (uint256 amount, uint256 lockUntil, uint256 boostMultiplier, uint256 pending)",
-            "function enterBoosting(uint256 _cozyAmount) external",
-            "function poolInfo(uint256) external view returns (address lpToken, uint96 allocPoint, uint128 totalStaked, bool allowsLock, uint32 minLockPeriod, uint32 maxLockPeriod, uint16 depositFee, bool isActive)",
-            "function poolLength() external view returns (uint256)"
-        ];
-
-        // State aplikasi
+        // State
         let provider, signer, userAddress;
-        let cozyToken, router, staking;
-        let selectedSlippage = 1; // 1% default
-        let currentTokenSelect = null;
-        let currentPrice = 0;
+        let cozyToken, router;
+        let selectedSlippage = 0.5;
 
-        // Daftar token yang didukung
-        let tokens = [
+        // Tokens
+        const tokens = [
             {
-                address: "0x0000000000000000000000000000000000000000", // XPL (native)
+                address: "0x0000000000000000000000000000000000000000",
                 symbol: "XPL",
                 name: "Plasma Chain Native",
                 decimals: 18,
-                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-                balance: "0"
+                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png"
             },
             {
                 address: COZY_TOKEN_ADDRESS,
                 symbol: "COZY",
                 name: "Cozy Token",
                 decimals: 18,
-                icon: "https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG",
-                balance: "0"
-            },
-            {
-                address: WXPL_ADDRESS,
-                symbol: "WXPL",
-                name: "Wrapped XPL",
-                decimals: 18,
-                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-                balance: "0"
+                icon: "https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG"
             }
         ];
 
-        // Inisialisasi aplikasi
+        // Inisialisasi
         document.addEventListener('DOMContentLoaded', async function() {
             await initializeApp();
             setupEventListeners();
-            checkAutoRelog();
         });
 
-        // Inisialisasi aplikasi
         async function initializeApp() {
             try {
                 if (typeof window.ethereum !== 'undefined') {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await checkNetwork();
                     
                     // Inisialisasi kontrak
                     cozyToken = new ethers.Contract(COZY_TOKEN_ADDRESS, ERC20_ABI, provider);
                     router = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, provider);
-                    staking = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
                     
+                    // Cek koneksi wallet
                     const accounts = await provider.listAccounts();
                     if (accounts.length > 0) {
                         userAddress = accounts[0];
                         updateWalletButton(true);
                         await updateBalances();
-                        await updateStakingInfo();
-                        await updateLiquidityPositions();
                     }
                     
-                    loadCustomTokens();
+                    console.log("App initialized successfully");
                 } else {
-                    showError('MetaMask tidak terinstall. Silakan install MetaMask untuk menggunakan aplikasi ini.');
+                    showError('Please install MetaMask');
                 }
             } catch (error) {
-                console.error('Error initializing app:', error);
-                showError('Gagal menginisialisasi aplikasi: ' + error.message);
+                console.error('Initialization error:', error);
+                showError('Failed to initialize app: ' + error.message);
             }
         }
 
-        // Setup event listeners
         function setupEventListeners() {
-            // Wallet connection
+            // Wallet
             document.getElementById('connectWallet').addEventListener('click', connectWallet);
             
-            // Tab navigation
+            // Tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1087,10 +746,6 @@
                     
                     this.classList.add('active');
                     document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
-                    
-                    if (this.dataset.tab === 'liquidity') {
-                        updateLiquidityPositions();
-                    }
                 });
             });
             
@@ -1099,68 +754,48 @@
             document.getElementById('selectToToken').addEventListener('click', () => openTokenModal('to'));
             document.getElementById('selectToken1').addEventListener('click', () => openTokenModal('token1'));
             document.getElementById('selectToken2').addEventListener('click', () => openTokenModal('token2'));
-            document.getElementById('closeTokenModal').addEventListener('click', closeTokenModal);
             
-            // Swap functionality
-            document.getElementById('fromAmount').addEventListener('input', debounce(calculateSwapOutput, 500));
-            document.getElementById('toAmount').addEventListener('input', debounce(calculateSwapInput, 500));
+            // Swap
+            document.getElementById('fromAmount').addEventListener('input', calculateSwapOutput);
             document.getElementById('switchTokens').addEventListener('click', switchTokens);
             document.getElementById('swapButton').addEventListener('click', executeSwap);
             
-            // Balance click
+            // Liquidity
+            document.getElementById('token1Amount').addEventListener('input', updateLiquidityButton);
+            document.getElementById('token2Amount').addEventListener('input', updateLiquidityButton);
+            document.getElementById('addLiquidityButton').addEventListener('click', addLiquidity);
+            
+            // Staking
+            document.getElementById('stakeButton').addEventListener('click', stakeTokens);
+            document.getElementById('unstakeButton').addEventListener('click', unstakeTokens);
+            document.getElementById('claimButton').addEventListener('click', claimRewards);
+            document.getElementById('maxStakeBtn').addEventListener('click', setMaxStake);
+            
+            // Balance clicks
             document.getElementById('fromBalanceText').addEventListener('click', setMaxFromBalance);
             document.getElementById('toBalanceText').addEventListener('click', setMaxToBalance);
             document.getElementById('token1BalanceText').addEventListener('click', setMaxToken1Balance);
             document.getElementById('token2BalanceText').addEventListener('click', setMaxToken2Balance);
             
-            // Settings
-            document.getElementById('settingsBtn').addEventListener('click', toggleSlippageSettings);
+            // Slippage
             document.querySelectorAll('.slippage-option').forEach(option => {
                 option.addEventListener('click', function() {
                     document.querySelectorAll('.slippage-option').forEach(o => o.classList.remove('active'));
                     this.classList.add('active');
                     selectedSlippage = parseFloat(this.dataset.slippage);
-                    calculateSwapOutput();
                 });
             });
-            document.getElementById('customSlippage').addEventListener('input', function() {
-                if (this.value) {
-                    document.querySelectorAll('.slippage-option').forEach(o => o.classList.remove('active'));
-                    selectedSlippage = parseFloat(this.value);
-                    calculateSwapOutput();
-                }
+            
+            // Modal close
+            document.getElementById('tokenModal').addEventListener('click', function(e) {
+                if (e.target === this) closeTokenModal();
             });
-            
-            // Liquidity
-            document.getElementById('token1Amount').addEventListener('input', debounce(calculateLiquidity, 500));
-            document.getElementById('token2Amount').addEventListener('input', debounce(calculateLiquidity, 500));
-            document.getElementById('addLiquidityButton').addEventListener('click', addLiquidity);
-            
-            // Staking
-            document.getElementById('maxStakeBtn').addEventListener('click', setMaxStake);
-            document.getElementById('maxLpStakeBtn').addEventListener('click', setMaxLpStake);
-            document.getElementById('stakeButton').addEventListener('click', stakeTokens);
-            document.getElementById('unstakeButton').addEventListener('click', unstakeTokens);
-            document.getElementById('claimButton').addEventListener('click', claimRewards);
-            document.getElementById('stakeLpButton').addEventListener('click', stakeLpTokens);
-            document.getElementById('unstakeLpButton').addEventListener('click', unstakeLpTokens);
-            document.getElementById('claimLpButton').addEventListener('click', claimLpRewards);
-            
-            // Add custom token
-            document.getElementById('addCustomTokenBtn').addEventListener('click', addCustomToken);
-            
-            // Auto relog
-            if (window.ethereum) {
-                window.ethereum.on('accountsChanged', handleAccountsChanged);
-                window.ethereum.on('chainChanged', handleChainChanged);
-            }
         }
 
-        // Koneksi wallet
         async function connectWallet() {
             try {
                 if (!provider) {
-                    showError('Provider tidak tersedia. Pastikan MetaMask terinstall.');
+                    showError('Provider not available');
                     return;
                 }
                 
@@ -1169,232 +804,76 @@
                 userAddress = accounts[0];
                 signer = provider.getSigner();
                 
+                // Update contracts with signer
                 cozyToken = cozyToken.connect(signer);
                 router = router.connect(signer);
-                staking = staking.connect(signer);
                 
                 updateWalletButton(true);
                 await updateBalances();
-                await updateStakingInfo();
-                await updateLiquidityPositions();
                 
-                showSuccess('Wallet berhasil terkoneksi!');
+                showSuccess('Wallet connected!');
+                
             } catch (error) {
-                console.error('Error connecting wallet:', error);
-                showError('Gagal menghubungkan wallet: ' + error.message);
+                console.error('Wallet connection error:', error);
+                showError('Failed to connect wallet: ' + error.message);
             }
         }
 
-        // Cek dan switch ke jaringan Plasma
-        async function checkNetwork() {
-            try {
-                const network = await provider.getNetwork();
-                if (network.chainId !== PLASMA_CHAIN_ID) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: `0x${PLASMA_CHAIN_ID.toString(16)}` }],
-                        });
-                    } catch (switchError) {
-                        if (switchError.code === 4902) {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [
-                                    {
-                                        chainId: `0x${PLASMA_CHAIN_ID.toString(16)}`,
-                                        chainName: 'Plasma Chain',
-                                        rpcUrls: [RPC_URL],
-                                        nativeCurrency: {
-                                            name: 'XPL',
-                                            symbol: 'XPL',
-                                            decimals: 18
-                                        },
-                                        blockExplorerUrls: ['https://plasmascan.to/']
-                                    }
-                                ]
-                            });
-                        } else {
-                            throw switchError;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error switching network:', error);
-                showError('Gagal beralih ke Plasma Chain. Pastikan jaringan sudah ditambahkan di MetaMask.');
-            }
-        }
-
-        // Update saldo token
         async function updateBalances() {
             if (!userAddress) return;
             
             try {
-                // Update XPL balance
+                // XPL Balance
                 const xplBalance = await provider.getBalance(userAddress);
-                const xplFormatted = formatBalance(xplBalance, 18);
-                document.getElementById('fromBalanceText').textContent = `Balance: ${xplFormatted}`;
-                document.getElementById('token1BalanceText').textContent = `Balance: ${xplFormatted}`;
+                const xplFormatted = ethers.utils.formatUnits(xplBalance, 18);
+                document.getElementById('fromBalanceText').textContent = `Balance: ${parseFloat(xplFormatted).toFixed(6)}`;
+                document.getElementById('token1BalanceText').textContent = `Balance: ${parseFloat(xplFormatted).toFixed(6)}`;
                 
-                // Update COZY balance
+                // COZY Balance
                 const cozyBalance = await cozyToken.balanceOf(userAddress);
-                const cozyFormatted = formatBalance(cozyBalance, 18);
-                document.getElementById('toBalanceText').textContent = `Balance: ${cozyFormatted}`;
-                document.getElementById('token2BalanceText').textContent = `Balance: ${cozyFormatted}`;
+                const cozyFormatted = ethers.utils.formatUnits(cozyBalance, 18);
+                document.getElementById('toBalanceText').textContent = `Balance: ${parseFloat(cozyFormatted).toFixed(6)}`;
+                document.getElementById('token2BalanceText').textContent = `Balance: ${parseFloat(cozyFormatted).toFixed(6)}`;
                 
-                // Update token balances
-                for (let token of tokens) {
-                    if (token.address !== "0x0000000000000000000000000000000000000000") {
-                        try {
-                            const tokenContract = new ethers.Contract(token.address, ERC20_ABI, provider);
-                            const balance = await tokenContract.balanceOf(userAddress);
-                            token.balance = balance;
-                        } catch (error) {
-                            console.error(`Error getting balance for ${token.symbol}:`, error);
-                        }
-                    } else {
-                        token.balance = xplBalance;
-                    }
-                }
+                console.log("Balances updated");
+                
             } catch (error) {
-                console.error('Error updating balances:', error);
+                console.error('Balance update error:', error);
             }
         }
 
-        // Update info staking
-        async function updateStakingInfo() {
-            if (!userAddress) return;
-            
-            try {
-                // COZY staking (pid 0)
-                const userStake = await staking.getUserStake(0, userAddress);
-                document.getElementById('userStake').textContent = formatBalance(userStake.amount, 18) + ' COZY';
-                
-                const pendingRewards = await staking.pendingRewards(0, userAddress);
-                document.getElementById('pendingRewards').textContent = formatBalance(pendingRewards, 18) + ' COZY';
-                
-                // LP staking (pid 1)
-                const userLpStake = await staking.getUserStake(1, userAddress);
-                document.getElementById('userLpStake').textContent = formatBalance(userLpStake.amount, 18) + ' LP';
-                
-                const pendingLpRewards = await staking.pendingRewards(1, userAddress);
-                document.getElementById('pendingLpRewards').textContent = formatBalance(pendingLpRewards, 18) + ' COZY';
-                
-            } catch (error) {
-                console.error('Error updating staking info:', error);
-            }
-        }
-
-        // Hitung output swap
         async function calculateSwapOutput() {
             const fromAmount = document.getElementById('fromAmount').value;
             const fromToken = getSelectedToken('from');
             const toToken = getSelectedToken('to');
             
             if (!fromAmount || parseFloat(fromAmount) <= 0) {
-                resetSwapForm();
+                document.getElementById('toAmount').value = '';
+                document.getElementById('swapButton').disabled = true;
                 return;
             }
             
             try {
-                let path, amounts;
-                
                 if (fromToken.symbol === 'XPL' && toToken.symbol === 'COZY') {
-                    path = [await router.WETH(), COZY_TOKEN_ADDRESS];
-                    amounts = await router.getAmountsOut(ethers.utils.parseEther(fromAmount), path);
-                } else if (fromToken.symbol === 'COZY' && toToken.symbol === 'XPL') {
-                    path = [COZY_TOKEN_ADDRESS, await router.WETH()];
-                    amounts = await router.getAmountsOut(ethers.utils.parseEther(fromAmount), path);
-                } else {
-                    resetSwapForm();
-                    return;
+                    const path = [await router.WETH(), COZY_TOKEN_ADDRESS];
+                    const amounts = await router.getAmountsOut(
+                        ethers.utils.parseEther(fromAmount), 
+                        path
+                    );
+                    const outputAmount = ethers.utils.formatEther(amounts[1]);
+                    document.getElementById('toAmount').value = parseFloat(outputAmount).toFixed(6);
+                    document.getElementById('swapButton').disabled = false;
                 }
-                
-                const outputAmount = ethers.utils.formatEther(amounts[amounts.length - 1]);
-                document.getElementById('toAmount').value = outputAmount;
-                
-                // Update price info
-                currentPrice = parseFloat(outputAmount) / parseFloat(fromAmount);
-                updatePriceInfo(fromAmount, outputAmount);
-                
-                document.getElementById('swapButton').disabled = false;
-                
             } catch (error) {
-                console.error('Error calculating swap:', error);
-                resetSwapForm();
+                console.error('Swap calculation error:', error);
+                document.getElementById('toAmount').value = '';
+                document.getElementById('swapButton').disabled = true;
             }
         }
 
-        // Hitung input swap (reverse)
-        async function calculateSwapInput() {
-            const toAmount = document.getElementById('toAmount').value;
-            const fromToken = getSelectedToken('from');
-            const toToken = getSelectedToken('to');
-            
-            if (!toAmount || parseFloat(toAmount) <= 0) {
-                resetSwapForm();
-                return;
-            }
-            
-            try {
-                let path, amounts;
-                
-                if (fromToken.symbol === 'XPL' && toToken.symbol === 'COZY') {
-                    path = [await router.WETH(), COZY_TOKEN_ADDRESS];
-                    amounts = await router.getAmountsIn(ethers.utils.parseEther(toAmount), path);
-                } else if (fromToken.symbol === 'COZY' && toToken.symbol === 'XPL') {
-                    path = [COZY_TOKEN_ADDRESS, await router.WETH()];
-                    amounts = await router.getAmountsIn(ethers.utils.parseEther(toAmount), path);
-                } else {
-                    resetSwapForm();
-                    return;
-                }
-                
-                const inputAmount = ethers.utils.formatEther(amounts[0]);
-                document.getElementById('fromAmount').value = inputAmount;
-                
-                // Update price info
-                currentPrice = parseFloat(toAmount) / parseFloat(inputAmount);
-                updatePriceInfo(inputAmount, toAmount);
-                
-                document.getElementById('swapButton').disabled = false;
-                
-            } catch (error) {
-                console.error('Error calculating swap input:', error);
-                resetSwapForm();
-            }
-        }
-
-        // Update info harga
-        function updatePriceInfo(inputAmount, outputAmount) {
-            const minOutput = parseFloat(outputAmount) * (1 - selectedSlippage / 100);
-            const priceImpact = calculatePriceImpact(parseFloat(inputAmount), parseFloat(outputAmount));
-            
-            document.getElementById('priceValue').textContent = `1 ${getSelectedToken('from').symbol} = ${currentPrice.toFixed(6)} ${getSelectedToken('to').symbol}`;
-            document.getElementById('minReceived').textContent = `${minOutput.toFixed(6)} ${getSelectedToken('to').symbol}`;
-            document.getElementById('priceImpact').textContent = `${priceImpact.toFixed(2)}%`;
-            document.getElementById('priceImpact').style.color = priceImpact > 5 ? 'var(--error)' : 'var(--text)';
-            
-            document.getElementById('priceInfo').style.display = 'block';
-        }
-
-        // Hitung price impact (sederhana)
-        function calculatePriceImpact(inputAmount, outputAmount) {
-            // Ini adalah simulasi sederhana, di real DEX akan menggunakan reserve data
-            const expectedOutput = inputAmount * 1; // Asumsi rate 1:1 untuk demo
-            return ((expectedOutput - outputAmount) / expectedOutput) * 100;
-        }
-
-        // Reset form swap
-        function resetSwapForm() {
-            document.getElementById('toAmount').value = '';
-            document.getElementById('priceInfo').style.display = 'none';
-            document.getElementById('swapButton').disabled = true;
-        }
-
-        // Eksekusi swap
         async function executeSwap() {
             if (!signer) {
-                showError('Wallet belum terkoneksi');
+                showError('Wallet not connected');
                 return;
             }
             
@@ -1403,67 +882,45 @@
             const toToken = getSelectedToken('to');
             
             try {
-                setTransactionStatus('pending', 'Processing swap transaction...');
                 document.getElementById('swapButton').disabled = true;
                 document.getElementById('swapButton').textContent = 'Swapping...';
                 
                 const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
-                const minOutput = parseFloat(document.getElementById('toAmount').value) * (1 - selectedSlippage / 100);
-                
-                let tx;
                 
                 if (fromToken.symbol === 'XPL' && toToken.symbol === 'COZY') {
+                    const minOutput = parseFloat(document.getElementById('toAmount').value) * (1 - selectedSlippage / 100);
                     const path = [await router.WETH(), COZY_TOKEN_ADDRESS];
-                    tx = await router.swapExactETHForTokens(
+                    
+                    const tx = await router.swapExactETHForTokens(
                         ethers.utils.parseEther(minOutput.toString()),
                         path,
                         userAddress,
                         deadline,
                         { value: ethers.utils.parseEther(fromAmount) }
                     );
-                } else if (fromToken.symbol === 'COZY' && toToken.symbol === 'XPL') {
-                    const path = [COZY_TOKEN_ADDRESS, await router.WETH()];
                     
-                    // Approve COZY token
-                    const approveTx = await cozyToken.approve(ROUTER_ADDRESS, ethers.utils.parseEther(fromAmount));
-                    await approveTx.wait();
+                    await tx.wait();
+                    showSuccess('Swap successful!');
                     
-                    tx = await router.swapExactTokensForETH(
-                        ethers.utils.parseEther(fromAmount),
-                        ethers.utils.parseEther(minOutput.toString()),
-                        path,
-                        userAddress,
-                        deadline
-                    );
-                } else {
-                    throw new Error('Token pair not supported');
+                    // Reset form
+                    document.getElementById('fromAmount').value = '';
+                    document.getElementById('toAmount').value = '';
+                    
+                    await updateBalances();
                 }
                 
-                setTransactionStatus('pending', 'Waiting for transaction confirmation...');
-                await tx.wait();
-                
-                setTransactionStatus('success', 'Swap completed successfully!');
-                showSuccess('Swap berhasil!');
-                
-                // Reset form dan update balances
-                resetSwapForm();
-                document.getElementById('fromAmount').value = '';
-                await updateBalances();
-                
             } catch (error) {
-                console.error('Error executing swap:', error);
-                setTransactionStatus('error', 'Swap failed: ' + error.message);
-                showError('Gagal melakukan swap: ' + error.message);
+                console.error('Swap execution error:', error);
+                showError('Swap failed: ' + error.message);
             } finally {
                 document.getElementById('swapButton').disabled = false;
                 document.getElementById('swapButton').textContent = 'Swap';
             }
         }
 
-        // Tambah liquidity
         async function addLiquidity() {
             if (!signer) {
-                showError('Wallet belum terkoneksi');
+                showError('Wallet not connected');
                 return;
             }
             
@@ -1473,12 +930,12 @@
             const token2 = getSelectedToken('token2');
             
             if (!token1Amount || !token2Amount || parseFloat(token1Amount) <= 0 || parseFloat(token2Amount) <= 0) {
-                showError('Masukkan jumlah token yang valid');
+                showError('Please enter valid amounts');
                 return;
             }
             
             try {
-                setLiquidityTransactionStatus('pending', 'Adding liquidity...');
+                console.log("Starting add liquidity...");
                 document.getElementById('addLiquidityButton').disabled = true;
                 document.getElementById('addLiquidityButton').textContent = 'Adding...';
                 
@@ -1497,157 +954,66 @@
                         cozyAmount = token1Amount;
                     }
                     
-                    // Approve COZY token
-                    const approveTx = await cozyToken.approve(ROUTER_ADDRESS, ethers.utils.parseEther(cozyAmount));
-                    await approveTx.wait();
+                    console.log("Adding liquidity with:", xplAmount, "XPL and", cozyAmount, "COZY");
                     
+                    // Approve COZY token
+                    console.log("Approving COZY token...");
+                    const approveTx = await cozyToken.approve(
+                        ROUTER_ADDRESS,
+                        ethers.utils.parseEther(cozyAmount)
+                    );
+                    await approveTx.wait();
+                    console.log("COZY token approved");
+                    
+                    // Add liquidity
+                    console.log("Adding liquidity...");
                     const tx = await router.addLiquidityETH(
                         COZY_TOKEN_ADDRESS,
                         ethers.utils.parseEther(cozyAmount),
-                        ethers.utils.parseEther(cozyAmount) * 99 / 100,
-                        ethers.utils.parseEther(xplAmount) * 99 / 100,
+                        ethers.utils.parseEther(cozyAmount) * 99 / 100, // 1% slippage
+                        ethers.utils.parseEther(xplAmount) * 99 / 100, // 1% slippage
                         userAddress,
                         deadline,
-                        { value: ethers.utils.parseEther(xplAmount) }
+                        { 
+                            value: ethers.utils.parseEther(xplAmount),
+                            gasLimit: 300000 
+                        }
                     );
                     
-                    setLiquidityTransactionStatus('pending', 'Waiting for confirmation...');
+                    console.log("Transaction sent:", tx.hash);
                     await tx.wait();
+                    console.log("Liquidity added successfully");
                     
-                    setLiquidityTransactionStatus('success', 'Liquidity added successfully!');
-                    showSuccess('Liquidity berhasil ditambahkan!');
+                    showSuccess('Liquidity added successfully!');
                     
                     // Reset form
                     document.getElementById('token1Amount').value = '';
                     document.getElementById('token2Amount').value = '';
                     
                     await updateBalances();
-                    await updateLiquidityPositions();
                 }
                 
             } catch (error) {
-                console.error('Error adding liquidity:', error);
-                setLiquidityTransactionStatus('error', 'Failed to add liquidity: ' + error.message);
-                showError('Gagal menambah liquidity: ' + error.message);
+                console.error('Add liquidity error:', error);
+                showError('Failed to add liquidity: ' + error.message);
             } finally {
                 document.getElementById('addLiquidityButton').disabled = false;
                 document.getElementById('addLiquidityButton').textContent = 'Add Liquidity';
             }
         }
 
-        // Stake tokens
-        async function stakeTokens() {
-            if (!signer) {
-                showError('Wallet belum terkoneksi');
-                return;
-            }
+        function updateLiquidityButton() {
+            const token1Amount = document.getElementById('token1Amount').value;
+            const token2Amount = document.getElementById('token2Amount').value;
             
-            const amount = document.getElementById('stakeAmount').value;
-            if (!amount || parseFloat(amount) <= 0) {
-                showError('Masukkan jumlah yang valid');
-                return;
-            }
-            
-            try {
-                document.getElementById('stakeButton').disabled = true;
-                document.getElementById('stakeButton').textContent = 'Staking...';
-                
-                const stakeAmount = ethers.utils.parseEther(amount);
-                
-                // Approve token
-                const approveTx = await cozyToken.approve(STAKING_ADDRESS, stakeAmount);
-                await approveTx.wait();
-                
-                // Stake (pid 0 untuk COZY staking)
-                const tx = await staking.deposit(0, stakeAmount, 0);
-                await tx.wait();
-                
-                showSuccess('Stake berhasil!');
-                await updateStakingInfo();
-                await updateBalances();
-                
-                document.getElementById('stakeAmount').value = '';
-                
-            } catch (error) {
-                console.error('Error staking:', error);
-                showError('Gagal melakukan stake: ' + error.message);
-            } finally {
-                document.getElementById('stakeButton').disabled = false;
-                document.getElementById('stakeButton').textContent = 'Stake';
-            }
-        }
-
-        // Unstake tokens
-        async function unstakeTokens() {
-            if (!signer) {
-                showError('Wallet belum terkoneksi');
-                return;
-            }
-            
-            const amount = document.getElementById('stakeAmount').value;
-            if (!amount || parseFloat(amount) <= 0) {
-                showError('Masukkan jumlah yang valid');
-                return;
-            }
-            
-            try {
-                document.getElementById('unstakeButton').disabled = true;
-                document.getElementById('unstakeButton').textContent = 'Unstaking...';
-                
-                const unstakeAmount = ethers.utils.parseEther(amount);
-                
-                // Unstake (pid 0 untuk COZY staking)
-                const tx = await staking.withdraw(0, unstakeAmount);
-                await tx.wait();
-                
-                showSuccess('Unstake berhasil!');
-                await updateStakingInfo();
-                await updateBalances();
-                
-                document.getElementById('stakeAmount').value = '';
-                
-            } catch (error) {
-                console.error('Error unstaking:', error);
-                showError('Gagal melakukan unstake: ' + error.message);
-            } finally {
-                document.getElementById('unstakeButton').disabled = false;
-                document.getElementById('unstakeButton').textContent = 'Unstake';
-            }
-        }
-
-        // Claim rewards
-        async function claimRewards() {
-            if (!signer) {
-                showError('Wallet belum terkoneksi');
-                return;
-            }
-            
-            try {
-                document.getElementById('claimButton').disabled = true;
-                document.getElementById('claimButton').textContent = 'Claiming...';
-                
-                // Claim rewards (pid 0 untuk COZY staking)
-                const tx = await staking.claimRewards(0);
-                await tx.wait();
-                
-                showSuccess('Rewards claimed successfully!');
-                await updateStakingInfo();
-                await updateBalances();
-                
-            } catch (error) {
-                console.error('Error claiming rewards:', error);
-                showError('Gagal claim rewards: ' + error.message);
-            } finally {
-                document.getElementById('claimButton').disabled = false;
-                document.getElementById('claimButton').textContent = 'Claim';
+            if (token1Amount && token2Amount && parseFloat(token1Amount) > 0 && parseFloat(token2Amount) > 0) {
+                document.getElementById('addLiquidityButton').disabled = false;
+            } else {
+                document.getElementById('addLiquidityButton').disabled = true;
             }
         }
 
         // Fungsi bantu
-        function formatBalance(balance, decimals) {
-            return parseFloat(ethers.utils.formatUnits(balance, decimals)).toFixed(6);
-        }
-
         function getSelectedToken(type) {
             const symbol = document.getElementById(`${type}TokenSymbol`).textContent;
             return tokens.find(token => token.symbol === symbol);
@@ -1664,10 +1030,7 @@
                 tokenItem.className = 'token-item';
                 tokenItem.innerHTML = `
                     <img class="token-icon" src="${token.icon}" alt="${token.symbol}">
-                    <div class="token-info">
-                        <div class="token-name">${token.name}</div>
-                        <div class="token-symbol">${token.symbol}</div>
-                    </div>
+                    <div>${token.symbol} - ${token.name}</div>
                 `;
                 tokenItem.addEventListener('click', () => selectToken(token));
                 tokenList.appendChild(tokenItem);
@@ -1684,18 +1047,7 @@
             if (currentTokenSelect) {
                 document.getElementById(`${currentTokenSelect}TokenSymbol`).textContent = token.symbol;
                 document.getElementById(`${currentTokenSelect}TokenIcon`).src = token.icon;
-                
-                // Reset amounts
-                if (currentTokenSelect === 'from' || currentTokenSelect === 'to') {
-                    resetSwapForm();
-                    document.getElementById('fromAmount').value = '';
-                } else if (currentTokenSelect === 'token1' || currentTokenSelect === 'token2') {
-                    document.getElementById('token1Amount').value = '';
-                    document.getElementById('token2Amount').value = '';
-                }
-                
                 closeTokenModal();
-                updateBalances();
             }
         }
 
@@ -1710,26 +1062,8 @@
             document.getElementById('toTokenSymbol').textContent = fromTokenSymbol;
             document.getElementById('toTokenIcon').src = fromTokenIcon;
             
-            resetSwapForm();
             document.getElementById('fromAmount').value = '';
-            
-            updateBalances();
-        }
-
-        function toggleSlippageSettings() {
-            const settings = document.getElementById('slippageSettings');
-            settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function calculateLiquidity() {
-            const token1Amount = document.getElementById('token1Amount').value;
-            const token2Amount = document.getElementById('token2Amount').value;
-            
-            if (token1Amount && token2Amount && parseFloat(token1Amount) > 0 && parseFloat(token2Amount) > 0) {
-                document.getElementById('addLiquidityButton').disabled = false;
-            } else {
-                document.getElementById('addLiquidityButton').disabled = true;
-            }
+            document.getElementById('toAmount').value = '';
         }
 
         function updateWalletButton(connected) {
@@ -1768,175 +1102,51 @@
             setTimeout(() => successDiv.remove(), 5000);
         }
 
-        function setTransactionStatus(type, message) {
-            const statusDiv = document.getElementById('transactionStatus');
-            statusDiv.innerHTML = '';
-            statusDiv.className = `transaction-status transaction-${type}`;
-            statusDiv.textContent = message;
-        }
-
-        function setLiquidityTransactionStatus(type, message) {
-            const statusDiv = document.getElementById('liquidityTransactionStatus');
-            statusDiv.innerHTML = '';
-            statusDiv.className = `transaction-status transaction-${type}`;
-            statusDiv.textContent = message;
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Auto relog
-        function checkAutoRelog() {
-            if (localStorage.getItem('autoRelog') === 'true' && userAddress) {
-                // Auto reconnect logic
-            }
-        }
-
-        // Event handlers untuk perubahan wallet
-        function handleAccountsChanged(accounts) {
-            if (accounts.length === 0) {
-                userAddress = null;
-                updateWalletButton(false);
-            } else {
-                userAddress = accounts[0];
-                updateWalletButton(true);
-                updateBalances();
-                updateStakingInfo();
-                updateLiquidityPositions();
-            }
-        }
-
-        function handleChainChanged(chainId) {
-            window.location.reload();
-        }
-
-        // Fungsi untuk menambah token custom
-        function addCustomToken() {
-            const address = document.getElementById('customTokenAddress').value;
-            const symbol = document.getElementById('customTokenSymbol').value;
-            const decimals = parseInt(document.getElementById('customTokenDecimals').value);
-            
-            if (!address || !symbol || isNaN(decimals)) {
-                showError('Harap isi semua field dengan benar');
-                return;
-            }
-            
-            if (tokens.some(token => token.address.toLowerCase() === address.toLowerCase())) {
-                showError('Token sudah ada dalam daftar');
-                return;
-            }
-            
-            const newToken = {
-                address: address,
-                symbol: symbol,
-                name: symbol,
-                decimals: decimals,
-                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png"
-            };
-            
-            tokens.push(newToken);
-            saveCustomTokens();
-            
-            document.getElementById('customTokenAddress').value = '';
-            document.getElementById('customTokenSymbol').value = '';
-            document.getElementById('customTokenDecimals').value = '';
-            
-            showSuccess('Token berhasil ditambahkan!');
-            closeTokenModal();
-        }
-
-        // Simpan token custom ke localStorage
-        function saveCustomTokens() {
-            const customTokens = tokens.filter(token => 
-                token.address !== "0x0000000000000000000000000000000000000000" &&
-                token.address !== COZY_TOKEN_ADDRESS &&
-                token.address !== WXPL_ADDRESS
-            );
-            localStorage.setItem('cozySwapCustomTokens', JSON.stringify(customTokens));
-        }
-
-        // Load token custom dari localStorage
-        function loadCustomTokens() {
-            const storedTokens = localStorage.getItem('cozySwapCustomTokens');
-            if (storedTokens) {
-                const customTokens = JSON.parse(storedTokens);
-                tokens = [...tokens, ...customTokens];
-            }
-        }
-
-        // Set max amount functions
+        // Balance max functions
         function setMaxFromBalance() {
-            const token = getSelectedToken('from');
-            if (token && token.balance) {
-                document.getElementById('fromAmount').value = formatBalance(token.balance, token.decimals);
-                calculateSwapOutput();
-            }
+            const balanceText = document.getElementById('fromBalanceText').textContent;
+            const balance = parseFloat(balanceText.split(': ')[1]);
+            document.getElementById('fromAmount').value = balance;
+            calculateSwapOutput();
         }
 
         function setMaxToBalance() {
-            const token = getSelectedToken('to');
-            if (token && token.balance) {
-                document.getElementById('toAmount').value = formatBalance(token.balance, token.decimals);
-                calculateSwapInput();
-            }
+            const balanceText = document.getElementById('toBalanceText').textContent;
+            const balance = parseFloat(balanceText.split(': ')[1]);
+            document.getElementById('toAmount').value = balance;
         }
 
         function setMaxToken1Balance() {
-            const token = getSelectedToken('token1');
-            if (token && token.balance) {
-                document.getElementById('token1Amount').value = formatBalance(token.balance, token.decimals);
-                calculateLiquidity();
-            }
+            const balanceText = document.getElementById('token1BalanceText').textContent;
+            const balance = parseFloat(balanceText.split(': ')[1]);
+            document.getElementById('token1Amount').value = balance;
+            updateLiquidityButton();
         }
 
         function setMaxToken2Balance() {
-            const token = getSelectedToken('token2');
-            if (token && token.balance) {
-                document.getElementById('token2Amount').value = formatBalance(token.balance, token.decimals);
-                calculateLiquidity();
-            }
+            const balanceText = document.getElementById('token2BalanceText').textContent;
+            const balance = parseFloat(balanceText.split(': ')[1]);
+            document.getElementById('token2Amount').value = balance;
+            updateLiquidityButton();
         }
 
         function setMaxStake() {
-            const cozyBalance = tokens.find(t => t.symbol === 'COZY').balance;
-            if (cozyBalance) {
-                document.getElementById('stakeAmount').value = formatBalance(cozyBalance, 18);
-            }
+            const balanceText = document.getElementById('toBalanceText').textContent;
+            const balance = parseFloat(balanceText.split(': ')[1]);
+            document.getElementById('stakeAmount').value = balance;
         }
 
-        function setMaxLpStake() {
-            // Untuk demo, set nilai default
-            document.getElementById('stakeLpAmount').value = '0';
+        // Staking functions (placeholder)
+        async function stakeTokens() {
+            showError('Staking coming soon');
         }
 
-        // Update liquidity positions (placeholder)
-        async function updateLiquidityPositions() {
-            const positionsDiv = document.getElementById('liquidityPositions');
-            positionsDiv.innerHTML = '<div class="no-positions">No liquidity positions found</div>';
-            
-            // Di implementasi real, akan fetch data LP positions dari blockchain
+        async function unstakeTokens() {
+            showError('Unstaking coming soon');
         }
 
-        // Placeholder functions untuk fitur tambahan
-        async function stakeLpTokens() {
-            showError('LP Staking coming soon');
-        }
-
-        async function unstakeLpTokens() {
-            showError('LP Unstaking coming soon');
-        }
-
-        async function claimLpRewards() {
-            showError('LP Rewards claiming coming soon');
+        async function claimRewards() {
+            showError('Claim rewards coming soon');
         }
     </script>
 </body>
