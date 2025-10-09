@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozySwap - Decentralized Exchange</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #6747ed;
+            --primary-dark: #5a3fd6;
+            --secondary: #1e1e1e;
+            --background: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a2a;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .network-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .network-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+
+        .wallet-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wallet-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .wallet-btn.connected {
+            background: var(--success);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .swap-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .token-input {
+            background: var(--secondary);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+            transition: border 0.2s;
+        }
+
+        .token-input:focus-within {
+            border-color: var(--primary);
+        }
+
+        .token-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .token-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .balance {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .token-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--background);
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 120px;
+        }
+
+        .token-select:hover {
+            background: #2a2a2a;
+        }
+
+        .token-select-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .token-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .token-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .token-amount {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 600;
+            width: 100%;
+            text-align: right;
+            outline: none;
+        }
+
+        .token-amount::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .swap-arrow {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .swap-arrow-btn {
+            background: var(--secondary);
+            border: none;
+            border-radius: 12px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            transition: background 0.2s;
+        }
+
+        .swap-arrow-btn:hover {
+            background: var(--border);
+        }
+
+        .swap-info {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+        }
+
+        .price-impact {
+            color: var(--success);
+        }
+
+        .price-impact.high {
+            color: var(--warning);
+        }
+
+        .price-impact.very-high {
+            color: var(--error);
+        }
+
+        .slippage-settings {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .slippage-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .slippage-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .slippage-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: var(--background);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .slippage-option.active {
+            background: var(--primary);
+        }
+
+        .slippage-input {
+            width: 100%;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .swap-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .swap-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .swap-btn:disabled {
+            background: var(--border);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .pool-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .add-liquidity-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .liquidity-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .liquidity-action-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            background: var(--secondary);
+        }
+
+        .liquidity-action-btn:hover {
+            background: var(--primary);
+        }
+
+        .stake-card {
+            margin-bottom: 10px;
+        }
+
+        .stake-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stake-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stake-apr {
+            font-size: 14px;
+            color: var(--success);
+        }
+
+        .stake-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stake-label {
+            color: var(--text-secondary);
+        }
+
+        .stake-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stake-action-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .stake-btn {
+            background: var(--primary);
+        }
+
+        .unstake-btn {
+            background: var(--error);
+        }
+
+        .stake-input-container {
+            margin: 10px 0;
+        }
+
+        .stake-input {
+            width: 100%;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .stake-input-label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .max-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .history-section {
+            margin-top: 20px;
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--secondary);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .history-type {
+            font-weight: 600;
+        }
+
+        .history-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .history-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .status-success {
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--warning);
+        }
+
+        .status-failed {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--error);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .token-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .token-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .token-item:hover {
+            background: var(--secondary);
+        }
+
+        .token-info {
+            margin-left: 12px;
+        }
+
+        .token-name {
+            font-weight: 600;
+        }
+
+        .token-symbol {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .add-token-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .add-token-input {
+            width: 100%;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .add-token-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--error);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--error);
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--success);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--success);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .social-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .social-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="CozySwap Logo">
+                <span>CozySwap</span>
+            </div>
+            <div class="network-indicator">
+                <div class="network-dot"></div>
+                <span>Plasma Chain</span>
+            </div>
+            <button class="wallet-btn" id="connectWallet">Connect Wallet</button>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="swap">Swap</div>
+            <div class="tab" data-tab="liquidity">Liquidity</div>
+            <div class="tab" data-tab="staking">Staking</div>
+            <div class="tab" data-tab="history">History</div>
+        </div>
+
+        <!-- Swap Tab -->
+        <div class="tab-content active" id="swap-tab">
+            <div class="card">
+                <div class="swap-header">
+                    <div class="swap-title">Swap</div>
+                    <button class="settings-btn" id="settingsBtn">⚙️</button>
+                </div>
+
+                <div class="token-input">
+                    <div class="token-row">
+                        <div class="token-label">From</div>
+                        <div class="balance">Balance: <span id="fromBalance">0</span></div>
+                    </div>
+                    <div class="input-row">
+                        <button class="token-select" id="selectFromToken">
+                            <div class="token-select-main">
+                                <img class="token-icon" id="fromTokenIcon" src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="XPL">
+                                <span id="fromTokenSymbol">XPL</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="token-name" id="fromTokenName">Plasma Chain Native</div>
+                        </button>
+                        <input type="number" class="token-amount" id="fromAmount" placeholder="0.0" min="0">
+                    </div>
+                </div>
+
+                <div class="swap-arrow">
+                    <button class="swap-arrow-btn" id="switchTokens">↓</button>
+                </div>
+
+                <div class="token-input">
+                    <div class="token-row">
+                        <div class="token-label">To</div>
+                        <div class="balance">Balance: <span id="toBalance">0</span></div>
+                    </div>
+                    <div class="input-row">
+                        <button class="token-select" id="selectToToken">
+                            <div class="token-select-main">
+                                <img class="token-icon" id="toTokenIcon" src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY">
+                                <span id="toTokenSymbol">COZY</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="token-name" id="toTokenName">Cozy Token</div>
+                        </button>
+                        <input type="number" class="token-amount" id="toAmount" placeholder="0.0" min="0" readonly>
+                    </div>
+                </div>
+
+                <div class="slippage-settings" id="slippageSettings">
+                    <div class="slippage-title">Slippage Tolerance</div>
+                    <div class="slippage-options">
+                        <div class="slippage-option" data-slippage="0.5">0.5%</div>
+                        <div class="slippage-option active" data-slippage="1">1%</div>
+                        <div class="slippage-option" data-slippage="2">2%</div>
+                        <input type="number" class="slippage-input" id="customSlippage" placeholder="Custom" min="0.1" max="50" step="0.1">
+                    </div>
+                </div>
+
+                <div class="swap-info" id="swapInfo" style="display: none;">
+                    <div class="info-row">
+                        <span class="info-label">Minimum received:</span>
+                        <span id="minReceived">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Price Impact:</span>
+                        <span id="priceImpact" class="price-impact">0%</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Route:</span>
+                        <span id="swapRoute">XPL → COZY</span>
+                    </div>
+                </div>
+
+                <button class="swap-btn" id="swapButton" disabled>Swap</button>
+            </div>
+        </div>
+
+        <!-- Liquidity Tab -->
+        <div class="tab-content" id="liquidity-tab">
+            <div class="card">
+                <div class="swap-header">
+                    <div class="swap-title">Add Liquidity</div>
+                </div>
+
+                <div class="pool-inputs">
+                    <div class="token-input">
+                        <div class="token-row">
+                            <div class="token-label">Token 1</div>
+                            <div class="balance">Balance: <span id="token1Balance">0</span></div>
+                        </div>
+                        <div class="input-row">
+                            <button class="token-select" id="selectToken1">
+                                <div class="token-select-main">
+                                    <img class="token-icon" id="token1Icon" src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="XPL">
+                                    <span id="token1Symbol">XPL</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="token-name" id="token1Name">Plasma Chain Native</div>
+                            </button>
+                            <input type="number" class="token-amount" id="token1Amount" placeholder="0.0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="token-input">
+                        <div class="token-row">
+                            <div class="token-label">Token 2</div>
+                            <div class="balance">Balance: <span id="token2Balance">0</span></div>
+                        </div>
+                        <div class="input-row">
+                            <button class="token-select" id="selectToken2">
+                                <div class="token-select-main">
+                                    <img class="token-icon" id="token2Icon" src="https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG" alt="COZY">
+                                    <span id="token2Symbol">COZY</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="token-name" id="token2Name">Cozy Token</div>
+                            </button>
+                            <input type="number" class="token-amount" id="token2Amount" placeholder="0.0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swap-info" id="liquidityInfo" style="display: none;">
+                    <div class="info-row">
+                        <span class="info-label">Pool Share:</span>
+                        <span id="poolShare">0%</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">LP Tokens:</span>
+                        <span id="lpTokens">0</span>
+                    </div>
+                </div>
+
+                <button class="add-liquidity-btn" id="addLiquidityButton" disabled>Add Liquidity</button>
+
+                <div class="liquidity-actions">
+                    <button class="liquidity-action-btn" id="viewLiquidityButton">View Liquidity</button>
+                    <button class="liquidity-action-btn" id="removeLiquidityButton">Remove Liquidity</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staking Tab -->
+        <div class="tab-content" id="staking-tab">
+            <div class="card stake-card">
+                <div class="stake-header">
+                    <div class="stake-title">COZY Staking</div>
+                    <div class="stake-apr">APR: 25%</div>
+                </div>
+                <div class="stake-details">
+                    <div class="stake-label">Your Stake:</div>
+                    <div id="userStake">0 COZY</div>
+                </div>
+                <div class="stake-details">
+                    <div class="stake-label">Pending Rewards:</div>
+                    <div id="pendingRewards">0 COZY</div>
+                </div>
+                
+                <div class="stake-input-container">
+                    <label class="stake-input-label">Amount to Stake/Unstake:</label>
+                    <input type="number" class="stake-input" id="stakeAmount" placeholder="0.0" min="0">
+                    <button class="max-btn" id="maxStakeBtn">MAX</button>
+                </div>
+                
+                <div class="stake-actions">
+                    <button class="stake-action-btn stake-btn" id="stakeButton">Stake</button>
+                    <button class="stake-action-btn unstake-btn" id="unstakeButton">Unstake</button>
+                    <button class="stake-action-btn" id="claimRewardsButton" style="background: var(--success);">Claim</button>
+                </div>
+            </div>
+
+            <div class="card stake-card">
+                <div class="stake-header">
+                    <div class="stake-title">COZY-XPL LP Staking</div>
+                    <div class="stake-apr">APR: 45%</div>
+                </div>
+                <div class="stake-details">
+                    <div class="stake-label">Your Stake:</div>
+                    <div id="userLpStake">0 LP</div>
+                </div>
+                <div class="stake-details">
+                    <div class="stake-label">Pending Rewards:</div>
+                    <div id="pendingLpRewards">0 COZY</div>
+                </div>
+                
+                <div class="stake-input-container">
+                    <label class="stake-input-label">Amount to Stake/Unstake:</label>
+                    <input type="number" class="stake-input" id="stakeLpAmount" placeholder="0.0" min="0">
+                    <button class="max-btn" id="maxLpStakeBtn">MAX</button>
+                </div>
+                
+                <div class="stake-actions">
+                    <button class="stake-action-btn stake-btn" id="stakeLpButton">Stake LP</button>
+                    <button class="stake-action-btn unstake-btn" id="unstakeLpButton">Unstake LP</button>
+                    <button class="stake-action-btn" id="claimLpRewardsButton" style="background: var(--success);">Claim</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content" id="history-tab">
+            <div class="card">
+                <div class="swap-header">
+                    <div class="swap-title">Transaction History</div>
+                </div>
+                <div class="history-section">
+                    <div class="history-title">Recent Transactions</div>
+                    <div id="transactionHistory">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            Loading transaction history...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>CozySwap - Decentralized Exchange on Plasma Chain</p>
+            <div class="social-links">
+                <a href="https://x.com/CozySwap" class="social-link" target="_blank">Twitter</a>
+                <a href="https://plasmascan.to/" class="social-link" target="_blank">Explorer</a>
+                <a href="#" class="social-link">Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Token Selection Modal -->
+    <div class="modal" id="tokenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Select a token</div>
+                <button class="close-modal" id="closeTokenModal">×</button>
+            </div>
+            <div class="token-list" id="tokenList">
+                <!-- Token items will be populated here -->
+            </div>
+            <div class="add-token-section">
+                <h3>Add Custom Token</h3>
+                <input type="text" class="add-token-input" id="customTokenAddress" placeholder="Token Address">
+                <button class="add-token-btn" id="addCustomTokenBtn">Import Token</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liquidity Modal -->
+    <div class="modal" id="liquidityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="liquidityModalTitle">Your Liquidity</div>
+                <button class="close-modal" id="closeLiquidityModal">×</button>
+            </div>
+            <div id="liquidityModalContent">
+                <!-- Content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi jaringan dan kontrak
+        const PLASMA_CHAIN_ID = 9745;
+        const RPC_URL = 'https://rpc.plasma.to';
+        const COZY_TOKEN_ADDRESS = '0x06e2ef46662834f4e42dbf9ff9222b077c57df5c';
+        const ROUTER_ADDRESS = '0x89E695B38610e78a77Fb310458Dfd855505AD239';
+        const STAKING_ADDRESS = '0x5Be32ac6F285e9DA3Dab9817ED15b06852a909C2';
+        const WXPL_ADDRESS = '0x6100E367285b01F48D07953803A2d8dCA5D19873';
+        const FACTORY_ADDRESS = '0xa252e44D3478CeBb1a3D59C9146CD860cb09Ec93';
+
+        // ABI kontrak
+        const COZY_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function allowance(address, address) view returns (uint256)",
+            "function approve(address, uint256) returns (bool)",
+            "function transfer(address, uint256) returns (bool)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)",
+            "function name() view returns (string)"
+        ];
+
+        const ROUTER_ABI = [
+            "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
+            "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
+            "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+            "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+            "function addLiquidityETH(address token, uint amountTokenDesired, uint amountTokenMin, uint amountETHMin, address to, uint deadline) external payable returns (uint amountToken, uint amountETH, uint liquidity)",
+            "function removeLiquidityETH(address token, uint liquidity, uint amountTokenMin, uint amountETHMin, address to, uint deadline) external returns (uint amountToken, uint amountETH)",
+            "function WETH() external pure returns (address)",
+            "function factory() external pure returns (address)"
+        ];
+
+        const FACTORY_ABI = [
+            "function getPair(address tokenA, address tokenB) external view returns (address pair)"
+        ];
+
+        const PAIR_ABI = [
+            "function token0() external view returns (address)",
+            "function token1() external view returns (address)",
+            "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+            "function totalSupply() external view returns (uint256)",
+            "function balanceOf(address) external view returns (uint256)"
+        ];
+
+        const STAKING_ABI = [
+            "function deposit(uint256 _pid, uint256 _amount, uint256 _lockPeriod) external",
+            "function withdraw(uint256 _pid, uint256 _amount) external",
+            "function claimRewards(uint256 _pid) external",
+            "function pendingRewards(uint256 _pid, address _user) external view returns (uint256)",
+            "function getUserStake(uint256 _pid, address _user) external view returns (uint256 amount, uint256 lockUntil, uint256 boostMultiplier, uint256 pending)",
+            "function enterBoosting(uint256 _cozyAmount) external",
+            "function poolInfo(uint256) external view returns (address lpToken, uint96 allocPoint, uint128 totalStaked, bool allowsLock, uint32 minLockPeriod, uint32 maxLockPeriod, uint16 depositFee, bool isActive)"
+        ];
+
+        // State aplikasi
+        let provider, signer, userAddress;
+        let cozyToken, router, staking, factory;
+        let selectedSlippage = 1; // 1% default
+        let currentTokenSelect = null;
+        let transactionHistory = [];
+
+        // Daftar token yang didukung
+        let tokens = [
+            {
+                address: "0x0000000000000000000000000000000000000000", // XPL (native)
+                symbol: "XPL",
+                name: "Plasma Chain Native",
+                decimals: 18,
+                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png"
+            },
+            {
+                address: COZY_TOKEN_ADDRESS,
+                symbol: "COZY",
+                name: "Cozy Token",
+                decimals: 18,
+                icon: "https://photos.pinksale.finance/file/pinksale-logo-upload/1759992605150-e3175ba3ea1d9672e44128a60a685807.JPG"
+            },
+            {
+                address: WXPL_ADDRESS,
+                symbol: "WXPL",
+                name: "Wrapped XPL",
+                decimals: 18,
+                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png"
+            }
+        ];
+
+        // Inisialisasi aplikasi
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeApp();
+            setupEventListeners();
+            loadTransactionHistory();
+            checkAutoRelog();
+        });
+
+        // Inisialisasi aplikasi
+        async function initializeApp() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await checkNetwork();
+                    
+                    // Inisialisasi kontrak
+                    cozyToken = new ethers.Contract(COZY_TOKEN_ADDRESS, COZY_ABI, provider);
+                    router = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, provider);
+                    staking = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
+                    factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, provider);
+                    
+                    const accounts = await provider.listAccounts();
+                    if (accounts.length > 0) {
+                        userAddress = accounts[0];
+                        updateWalletButton(true);
+                        await updateBalances();
+                        await updateStakingInfo();
+                        await updateLiquidityInfo();
+                    }
+                    
+                    loadCustomTokens();
+                } else {
+                    showError('MetaMask tidak terinstall. Silakan install MetaMask untuk menggunakan aplikasi ini.');
+                }
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showError('Gagal menginisialisasi aplikasi: ' + error.message);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Wallet connection
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            
+            // Tab navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
+                    
+                    if (this.dataset.tab === 'history') {
+                        displayTransactionHistory();
+                    }
+                });
+            });
+            
+            // Token selection
+            document.getElementById('selectFromToken').addEventListener('click', () => openTokenModal('from'));
+            document.getElementById('selectToToken').addEventListener('click', () => openTokenModal('to'));
+            document.getElementById('selectToken1').addEventListener('click', () => openTokenModal('token1'));
+            document.getElementById('selectToken2').addEventListener('click', () => openTokenModal('token2'));
+            document.getElementById('closeTokenModal').addEventListener('click', closeTokenModal);
+            
+            // Swap functionality
+            document.getElementById('fromAmount').addEventListener('input', debounce(calculateSwapOutput, 500));
+            document.getElementById('switchTokens').addEventListener('click', switchTokens);
+            document.getElementById('swapButton').addEventListener('click', executeSwap);
+            
+            // Settings
+            document.getElementById('settingsBtn').addEventListener('click', toggleSlippageSettings);
+            document.querySelectorAll('.slippage-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.slippage-option').forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedSlippage = parseFloat(this.dataset.slippage);
+                });
+            });
+            document.getElementById('customSlippage').addEventListener('input', function() {
+                if (this.value) {
+                    document.querySelectorAll('.slippage-option').forEach(o => o.classList.remove('active'));
+                    selectedSlippage = parseFloat(this.value);
+                }
+            });
+            
+            // Liquidity
+            document.getElementById('token1Amount').addEventListener('input', debounce(calculateLiquidity, 500));
+            document.getElementById('token2Amount').addEventListener('input', debounce(calculateLiquidity, 500));
+            document.getElementById('addLiquidityButton').addEventListener('click', addLiquidity);
+            document.getElementById('viewLiquidityButton').addEventListener('click', viewLiquidity);
+            document.getElementById('removeLiquidityButton').addEventListener('click', removeLiquidity);
+            document.getElementById('closeLiquidityModal').addEventListener('click', closeLiquidityModal);
+            
+            // Staking
+            document.getElementById('maxStakeBtn').addEventListener('click', setMaxStake);
+            document.getElementById('maxLpStakeBtn').addEventListener('click', setMaxLpStake);
+            document.getElementById('stakeButton').addEventListener('click', stakeTokens);
+            document.getElementById('unstakeButton').addEventListener('click', unstakeTokens);
+            document.getElementById('stakeLpButton').addEventListener('click', stakeLpTokens);
+            document.getElementById('unstakeLpButton').addEventListener('click', unstakeLpTokens);
+            document.getElementById('claimRewardsButton').addEventListener('click', claimRewards);
+            document.getElementById('claimLpRewardsButton').addEventListener('click', claimLpRewards);
+            
+            // Add custom token
+            document.getElementById('addCustomTokenBtn').addEventListener('click', addCustomToken);
+            
+            // Auto relog ketika wallet berubah
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', handleChainChanged);
+            }
+        }
+
+        // Koneksi wallet
+        async function connectWallet() {
+            try {
+                if (!provider) {
+                    showError('Provider tidak tersedia. Pastikan MetaMask terinstall.');
+                    return;
+                }
+                
+                await provider.send("eth_requestAccounts", []);
+                const accounts = await provider.listAccounts();
+                userAddress = accounts[0];
+                signer = provider.getSigner();
+                
+                // Update kontrak dengan signer
+                cozyToken = cozyToken.connect(signer);
+                router = router.connect(signer);
+                staking = staking.connect(signer);
+                factory = factory.connect(signer);
+                
+                updateWalletButton(true);
+                await updateBalances();
+                await updateStakingInfo();
+                await updateLiquidityInfo();
+                
+                showSuccess('Wallet berhasil terkoneksi!');
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                showError('Gagal menghubungkan wallet: ' + error.message);
+            }
+        }
+
+        // Cek dan switch ke jaringan Plasma jika diperlukan
+        async function checkNetwork() {
+            try {
+                const network = await provider.getNetwork();
+                if (network.chainId !== PLASMA_CHAIN_ID) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: `0x${PLASMA_CHAIN_ID.toString(16)}` }],
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [
+                                    {
+                                        chainId: `0x${PLASMA_CHAIN_ID.toString(16)}`,
+                                        chainName: 'Plasma Chain',
+                                        rpcUrls: [RPC_URL],
+                                        nativeCurrency: {
+                                            name: 'XPL',
+                                            symbol: 'XPL',
+                                            decimals: 18
+                                        },
+                                        blockExplorerUrls: ['https://plasmascan.to/']
+                                    }
+                                ]
+                            });
+                        } else {
+                            throw switchError;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error switching network:', error);
+                showError('Gagal beralih ke Plasma Chain. Pastikan jaringan sudah ditambahkan di MetaMask.');
+            }
+        }
+
+        // Update saldo token
+        async function updateBalances() {
+            if (!userAddress) return;
+            
+            try {
+                // Update XPL balance (native)
+                const xplBalance = await provider.getBalance(userAddress);
+                document.getElementById('fromBalance').textContent = formatBalance(xplBalance, 18) + ' XPL';
+                document.getElementById('token1Balance').textContent = formatBalance(xplBalance, 18) + ' XPL';
+                
+                // Update COZY balance
+                const cozyBalance = await cozyToken.balanceOf(userAddress);
+                document.getElementById('toBalance').textContent = formatBalance(cozyBalance, 18) + ' COZY';
+                document.getElementById('token2Balance').textContent = formatBalance(cozyBalance, 18) + ' COZY';
+                
+                // Update untuk token custom
+                for (let token of tokens) {
+                    if (token.address !== "0x0000000000000000000000000000000000000000") {
+                        try {
+                            const tokenContract = new ethers.Contract(token.address, COZY_ABI, provider);
+                            const balance = await tokenContract.balanceOf(userAddress);
+                            token.balance = balance;
+                        } catch (error) {
+                            console.error(`Error getting balance for ${token.symbol}:`, error);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating balances:', error);
+            }
+        }
+
+        // Update info staking
+        async function updateStakingInfo() {
+            if (!userAddress) return;
+            
+            try {
+                // Untuk COZY staking (pid 0)
+                const userStake = await staking.getUserStake(0, userAddress);
+                document.getElementById('userStake').textContent = formatBalance(userStake.amount, 18) + ' COZY';
+                document.getElementById('pendingRewards').textContent = formatBalance(userStake.pending, 18) + ' COZY';
+                
+                // Untuk LP staking (pid 1)
+                const userLpStake = await staking.getUserStake(1, userAddress);
+                document.getElementById('userLpStake').textContent = formatBalance(userLpStake.amount, 18) + ' LP';
+                document.getElementById('pendingLpRewards').textContent = formatBalance(userLpStake.pending, 18) + ' COZY';
+            } catch (error) {
+                console.error('Error updating staking info:', error);
+            }
+        }
+
+        // Update info liquidity
+        async function updateLiquidityInfo() {
+            if (!userAddress) return;
+            
+            try {
+                const lpTokenAddress = await factory.getPair(COZY_TOKEN_ADDRESS, await router.WETH());
+                if (lpTokenAddress !== '0x0000000000000000000000000000000000000000') {
+                    const lpToken = new ethers.Contract(lpTokenAddress, PAIR_ABI, provider);
+                    const lpBalance = await lpToken.balanceOf(userAddress);
+                    
+                    if (lpBalance.gt(0)) {
+                        const totalSupply = await lpToken.totalSupply();
+                        const reserves = await lpToken.getReserves();
+                        
+                        const share = (lpBalance.mul(10000).div(totalSupply)).toNumber() / 100;
+                        document.getElementById('poolShare').textContent = share + '%';
+                        document.getElementById('lpTokens').textContent = formatBalance(lpBalance, 18);
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating liquidity info:', error);
+            }
+        }
+
+        // Hitung output swap
+        async function calculateSwapOutput() {
+            const fromAmount = document.getElementById('fromAmount').value;
+            const fromToken = getSelectedToken('from');
+            const toToken = getSelectedToken('to');
+            
+            if (!fromAmount || parseFloat(fromAmount) <= 0) {
+                document.getElementById('toAmount').value = '';
+                document.getElementById('swapInfo').style.display = 'none';
+                document.getElementById('swapButton').disabled = true;
+                return;
+            }
+            
+            try {
+                let path, amounts;
+                
+                if (fromToken.symbol === 'XPL' && toToken.symbol === 'COZY') {
+                    path = [await router.WETH(), COZY_TOKEN_ADDRESS];
+                    amounts = await router.getAmountsOut(ethers.utils.parseEther(fromAmount), path);
+                } else if (fromToken.symbol === 'COZY' && toToken.symbol === 'XPL') {
+                    path = [COZY_TOKEN_ADDRESS, await router.WETH()];
+                    amounts = await router.getAmountsOut(ethers.utils.parseEther(fromAmount), path);
+                } else {
+                    document.getElementById('swapButton').disabled = true;
+                    return;
+                }
+                
+                const outputAmount = ethers.utils.formatEther(amounts[amounts.length - 1]);
+                document.getElementById('toAmount').value = outputAmount;
+                
+                // Calculate price impact
+                const priceImpact = calculatePriceImpact(parseFloat(fromAmount), parseFloat(outputAmount), amounts);
+                const minOutput = outputAmount * (1 - selectedSlippage / 100);
+                
+                // Update swap info
+                document.getElementById('minReceived').textContent = minOutput.toFixed(6) + ' ' + toToken.symbol;
+                document.getElementById('priceImpact').textContent = priceImpact.toFixed(2) + '%';
+                document.getElementById('swapRoute').textContent = `${fromToken.symbol} → ${toToken.symbol}`;
+                
+                // Set price impact color
+                const priceImpactElem = document.getElementById('priceImpact');
+                priceImpactElem.className = 'price-impact';
+                if (priceImpact > 5) priceImpactElem.classList.add('high');
+                if (priceImpact > 10) priceImpactElem.classList.add('very-high');
+                
+                document.getElementById('swapInfo').style.display = 'block';
+                document.getElementById('swapButton').disabled = false;
+                
+            } catch (error) {
+                console.error('Error calculating swap:', error);
+                document.getElementById('toAmount').value = '';
+                document.getElementById('swapInfo').style.display = 'none';
+                document.getElementById('swapButton').disabled = true;
+            }
+        }
+
+        // Calculate price impact
+        function calculatePriceImpact(inputAmount, outputAmount, amounts) {
+            if (!amounts || amounts.length < 2) return 0;
+            
+            const inputReserve = parseFloat(ethers.utils.formatEther(amounts[0]));
+            const outputReserve = parseFloat(ethers.utils.formatEther(amounts[1]));
+            
+            const effectivePrice = outputAmount / inputAmount;
+            const marketPrice = outputReserve / inputReserve;
+            
+            const priceImpact = Math.abs((marketPrice - effectivePrice) / marketPrice) * 100;
+            return priceImpact;
+        }
+
+        // Eksekusi swap
+        async function executeSwap() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const fromAmount = document.getElementById('fromAmount').value;
+            const fromToken = getSelectedToken('from');
+            const toToken = getSelectedToken('to');
+            
+            try {
+                document.getElementById('swapButton').disabled = true;
+                document.getElementById('swapButton').textContent = 'Swapping...';
+                
+                const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+                const minOutput = document.getElementById('toAmount').value * (1 - selectedSlippage / 100);
+                let tx;
+                
+                if (fromToken.symbol === 'XPL' && toToken.symbol === 'COZY') {
+                    const path = [await router.WETH(), COZY_TOKEN_ADDRESS];
+                    
+                    tx = await router.swapExactETHForTokens(
+                        ethers.utils.parseEther(minOutput.toString()),
+                        path,
+                        userAddress,
+                        deadline,
+                        { value: ethers.utils.parseEther(fromAmount) }
+                    );
+                } else if (fromToken.symbol === 'COZY' && toToken.symbol === 'XPL') {
+                    const path = [COZY_TOKEN_ADDRESS, await router.WETH()];
+                    
+                    const approveTx = await cozyToken.approve(ROUTER_ADDRESS, ethers.utils.parseEther(fromAmount));
+                    await approveTx.wait();
+                    
+                    tx = await router.swapExactTokensForETH(
+                        ethers.utils.parseEther(fromAmount),
+                        ethers.utils.parseEther(minOutput.toString()),
+                        path,
+                        userAddress,
+                        deadline
+                    );
+                }
+                
+                await tx.wait();
+                
+                // Add to transaction history
+                addToHistory('swap', fromToken.symbol, toToken.symbol, fromAmount, 'success');
+                
+                showSuccess('Swap berhasil!');
+                
+                // Reset form
+                document.getElementById('fromAmount').value = '';
+                document.getElementById('toAmount').value = '';
+                document.getElementById('swapInfo').style.display = 'none';
+                
+                // Update balances
+                await updateBalances();
+                
+            } catch (error) {
+                console.error('Error executing swap:', error);
+                addToHistory('swap', fromToken.symbol, toToken.symbol, fromAmount, 'failed');
+                showError('Gagal melakukan swap: ' + error.message);
+            } finally {
+                document.getElementById('swapButton').disabled = false;
+                document.getElementById('swapButton').textContent = 'Swap';
+            }
+        }
+
+        // Tambah liquidity
+        async function addLiquidity() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const token1Amount = document.getElementById('token1Amount').value;
+            const token2Amount = document.getElementById('token2Amount').value;
+            const token1 = getSelectedToken('token1');
+            const token2 = getSelectedToken('token2');
+            
+            if (!token1Amount || !token2Amount || parseFloat(token1Amount) <= 0 || parseFloat(token2Amount) <= 0) {
+                showError('Masukkan jumlah token yang valid');
+                return;
+            }
+            
+            try {
+                document.getElementById('addLiquidityButton').disabled = true;
+                document.getElementById('addLiquidityButton').textContent = 'Adding Liquidity...';
+                
+                const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+                
+                if ((token1.symbol === 'XPL' && token2.symbol === 'COZY') || 
+                    (token1.symbol === 'COZY' && token2.symbol === 'XPL')) {
+                    
+                    let xplAmount, cozyAmount;
+                    if (token1.symbol === 'XPL') {
+                        xplAmount = token1Amount;
+                        cozyAmount = token2Amount;
+                    } else {
+                        xplAmount = token2Amount;
+                        cozyAmount = token1Amount;
+                    }
+                    
+                    const approveTx = await cozyToken.approve(ROUTER_ADDRESS, ethers.utils.parseEther(cozyAmount));
+                    await approveTx.wait();
+                    
+                    const tx = await router.addLiquidityETH(
+                        COZY_TOKEN_ADDRESS,
+                        ethers.utils.parseEther(cozyAmount),
+                        ethers.utils.parseEther(cozyAmount) * 99 / 100,
+                        ethers.utils.parseEther(xplAmount) * 99 / 100,
+                        userAddress,
+                        deadline,
+                        { value: ethers.utils.parseEther(xplAmount) }
+                    );
+                    
+                    await tx.wait();
+                    
+                    addToHistory('add_liquidity', 'XPL/COZY', 'LP', `${xplAmount}/${cozyAmount}`, 'success');
+                    showSuccess('Liquidity berhasil ditambahkan!');
+                }
+                
+                document.getElementById('token1Amount').value = '';
+                document.getElementById('token2Amount').value = '';
+                document.getElementById('liquidityInfo').style.display = 'none';
+                
+                await updateBalances();
+                await updateLiquidityInfo();
+                
+            } catch (error) {
+                console.error('Error adding liquidity:', error);
+                addToHistory('add_liquidity', 'XPL/COZY', 'LP', `${token1Amount}/${token2Amount}`, 'failed');
+                showError('Gagal menambah liquidity: ' + error.message);
+            } finally {
+                document.getElementById('addLiquidityButton').disabled = false;
+                document.getElementById('addLiquidityButton').textContent = 'Add Liquidity';
+            }
+        }
+
+        // View liquidity
+        async function viewLiquidity() {
+            if (!userAddress) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            try {
+                const lpTokenAddress = await factory.getPair(COZY_TOKEN_ADDRESS, await router.WETH());
+                if (lpTokenAddress === '0x0000000000000000000000000000000000000000') {
+                    showError('Tidak ada liquidity pool untuk pair ini');
+                    return;
+                }
+                
+                const lpToken = new ethers.Contract(lpTokenAddress, PAIR_ABI, provider);
+                const lpBalance = await lpToken.balanceOf(userAddress);
+                
+                if (lpBalance.eq(0)) {
+                    showError('Anda tidak memiliki liquidity untuk pair ini');
+                    return;
+                }
+                
+                const totalSupply = await lpToken.totalSupply();
+                const reserves = await lpToken.getReserves();
+                
+                const share = (lpBalance.mul(10000).div(totalSupply)).toNumber() / 100;
+                const xplAmount = (reserves[1].mul(lpBalance).div(totalSupply));
+                const cozyAmount = (reserves[0].mul(lpBalance).div(totalSupply));
+                
+                document.getElementById('liquidityModalTitle').textContent = 'Your Liquidity';
+                document.getElementById('liquidityModalContent').innerHTML = `
+                    <div class="stake-details">
+                        <div class="stake-label">LP Tokens:</div>
+                        <div>${formatBalance(lpBalance, 18)}</div>
+                    </div>
+                    <div class="stake-details">
+                        <div class="stake-label">Pool Share:</div>
+                        <div>${share}%</div>
+                    </div>
+                    <div class="stake-details">
+                        <div class="stake-label">XPL in Pool:</div>
+                        <div>${formatBalance(xplAmount, 18)} XPL</div>
+                    </div>
+                    <div class="stake-details">
+                        <div class="stake-label">COZY in Pool:</div>
+                        <div>${formatBalance(cozyAmount, 18)} COZY</div>
+                    </div>
+                `;
+                
+                document.getElementById('liquidityModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error viewing liquidity:', error);
+                showError('Gagal memuat informasi liquidity: ' + error.message);
+            }
+        }
+
+        // Remove liquidity
+        async function removeLiquidity() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            try {
+                const lpTokenAddress = await factory.getPair(COZY_TOKEN_ADDRESS, await router.WETH());
+                const lpToken = new ethers.Contract(lpTokenAddress, PAIR_ABI, signer);
+                const lpBalance = await lpToken.balanceOf(userAddress);
+                
+                if (lpBalance.eq(0)) {
+                    showError('Tidak ada liquidity untuk ditarik');
+                    return;
+                }
+                
+                const approveTx = await lpToken.approve(ROUTER_ADDRESS, lpBalance);
+                await approveTx.wait();
+                
+                const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+                
+                const tx = await router.removeLiquidityETH(
+                    COZY_TOKEN_ADDRESS,
+                    lpBalance,
+                    0,
+                    0,
+                    userAddress,
+                    deadline
+                );
+                
+                await tx.wait();
+                
+                addToHistory('remove_liquidity', 'LP', 'XPL/COZY', formatBalance(lpBalance, 18), 'success');
+                showSuccess('Liquidity berhasil ditarik!');
+                
+                await updateBalances();
+                await updateLiquidityInfo();
+                closeLiquidityModal();
+                
+            } catch (error) {
+                console.error('Error removing liquidity:', error);
+                addToHistory('remove_liquidity', 'LP', 'XPL/COZY', '0', 'failed');
+                showError('Gagal menarik liquidity: ' + error.message);
+            }
+        }
+
+        // Stake tokens
+        async function stakeTokens() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const amount = document.getElementById('stakeAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showError('Masukkan jumlah yang valid');
+                return;
+            }
+            
+            try {
+                document.getElementById('stakeButton').disabled = true;
+                document.getElementById('stakeButton').textContent = 'Staking...';
+                
+                const stakeAmount = ethers.utils.parseEther(amount);
+                
+                const approveTx = await cozyToken.approve(STAKING_ADDRESS, stakeAmount);
+                await approveTx.wait();
+                
+                const tx = await staking.deposit(0, stakeAmount, 0);
+                await tx.wait();
+                
+                addToHistory('stake', 'COZY', 'Staking', amount, 'success');
+                showSuccess('Stake berhasil!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                
+                document.getElementById('stakeAmount').value = '';
+                
+            } catch (error) {
+                console.error('Error staking:', error);
+                addToHistory('stake', 'COZY', 'Staking', amount, 'failed');
+                showError('Gagal melakukan stake: ' + error.message);
+            } finally {
+                document.getElementById('stakeButton').disabled = false;
+                document.getElementById('stakeButton').textContent = 'Stake';
+            }
+        }
+
+        // Unstake tokens
+        async function unstakeTokens() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const amount = document.getElementById('stakeAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showError('Masukkan jumlah yang valid');
+                return;
+            }
+            
+            try {
+                document.getElementById('unstakeButton').disabled = true;
+                document.getElementById('unstakeButton').textContent = 'Unstaking...';
+                
+                const unstakeAmount = ethers.utils.parseEther(amount);
+                
+                const tx = await staking.withdraw(0, unstakeAmount);
+                await tx.wait();
+                
+                addToHistory('unstake', 'Staking', 'COZY', amount, 'success');
+                showSuccess('Unstake berhasil!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                
+                document.getElementById('stakeAmount').value = '';
+                
+            } catch (error) {
+                console.error('Error unstaking:', error);
+                addToHistory('unstake', 'Staking', 'COZY', amount, 'failed');
+                showError('Gagal melakukan unstake: ' + error.message);
+            } finally {
+                document.getElementById('unstakeButton').disabled = false;
+                document.getElementById('unstakeButton').textContent = 'Unstake';
+            }
+        }
+
+        // Claim rewards
+        async function claimRewards() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            try {
+                document.getElementById('claimRewardsButton').disabled = true;
+                document.getElementById('claimRewardsButton').textContent = 'Claiming...';
+                
+                const tx = await staking.claimRewards(0);
+                await tx.wait();
+                
+                addToHistory('claim_rewards', 'Staking', 'COZY', '0', 'success');
+                showSuccess('Rewards berhasil di-claim!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                
+            } catch (error) {
+                console.error('Error claiming rewards:', error);
+                addToHistory('claim_rewards', 'Staking', 'COZY', '0', 'failed');
+                showError('Gagal claim rewards: ' + error.message);
+            } finally {
+                document.getElementById('claimRewardsButton').disabled = false;
+                document.getElementById('claimRewardsButton').textContent = 'Claim';
+            }
+        }
+
+        // Stake LP tokens
+        async function stakeLpTokens() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const amount = document.getElementById('stakeLpAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showError('Masukkan jumlah yang valid');
+                return;
+            }
+            
+            try {
+                document.getElementById('stakeLpButton').disabled = true;
+                document.getElementById('stakeLpButton').textContent = 'Staking...';
+                
+                const lpTokenAddress = await factory.getPair(COZY_TOKEN_ADDRESS, await router.WETH());
+                const lpToken = new ethers.Contract(lpTokenAddress, COZY_ABI, signer);
+                const stakeAmount = ethers.utils.parseEther(amount);
+                
+                const approveTx = await lpToken.approve(STAKING_ADDRESS, stakeAmount);
+                await approveTx.wait();
+                
+                const tx = await staking.deposit(1, stakeAmount, 0);
+                await tx.wait();
+                
+                addToHistory('stake_lp', 'LP', 'Staking', amount, 'success');
+                showSuccess('LP Tokens berhasil di-stake!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                await updateLiquidityInfo();
+                
+                document.getElementById('stakeLpAmount').value = '';
+                
+            } catch (error) {
+                console.error('Error staking LP:', error);
+                addToHistory('stake_lp', 'LP', 'Staking', amount, 'failed');
+                showError('Gagal melakukan stake LP: ' + error.message);
+            } finally {
+                document.getElementById('stakeLpButton').disabled = false;
+                document.getElementById('stakeLpButton').textContent = 'Stake LP';
+            }
+        }
+
+        // Unstake LP tokens
+        async function unstakeLpTokens() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            const amount = document.getElementById('stakeLpAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                showError('Masukkan jumlah yang valid');
+                return;
+            }
+            
+            try {
+                document.getElementById('unstakeLpButton').disabled = true;
+                document.getElementById('unstakeLpButton').textContent = 'Unstaking...';
+                
+                const unstakeAmount = ethers.utils.parseEther(amount);
+                
+                const tx = await staking.withdraw(1, unstakeAmount);
+                await tx.wait();
+                
+                addToHistory('unstake_lp', 'Staking', 'LP', amount, 'success');
+                showSuccess('Unstake LP berhasil!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                await updateLiquidityInfo();
+                
+                document.getElementById('stakeLpAmount').value = '';
+                
+            } catch (error) {
+                console.error('Error unstaking LP:', error);
+                addToHistory('unstake_lp', 'Staking', 'LP', amount, 'failed');
+                showError('Gagal melakukan unstake LP: ' + error.message);
+            } finally {
+                document.getElementById('unstakeLpButton').disabled = false;
+                document.getElementById('unstakeLpButton').textContent = 'Unstake LP';
+            }
+        }
+
+        // Claim LP rewards
+        async function claimLpRewards() {
+            if (!signer) {
+                showError('Wallet belum terkoneksi');
+                return;
+            }
+            
+            try {
+                document.getElementById('claimLpRewardsButton').disabled = true;
+                document.getElementById('claimLpRewardsButton').textContent = 'Claiming...';
+                
+                const tx = await staking.claimRewards(1);
+                await tx.wait();
+                
+                addToHistory('claim_lp_rewards', 'Staking', 'COZY', '0', 'success');
+                showSuccess('LP Rewards berhasil di-claim!');
+                
+                await updateStakingInfo();
+                await updateBalances();
+                
+            } catch (error) {
+                console.error('Error claiming LP rewards:', error);
+                addToHistory('claim_lp_rewards', 'Staking', 'COZY', '0', 'failed');
+                showError('Gagal claim LP rewards: ' + error.message);
+            } finally {
+                document.getElementById('claimLpRewardsButton').disabled = false;
+                document.getElementById('claimLpRewardsButton').textContent = 'Claim';
+            }
+        }
+
+        // Fungsi bantu
+        function formatBalance(balance, decimals) {
+            return parseFloat(ethers.utils.formatUnits(balance, decimals)).toFixed(4);
+        }
+
+        function getSelectedToken(type) {
+            const symbol = document.getElementById(`${type}TokenSymbol`).textContent;
+            return tokens.find(token => token.symbol === symbol);
+        }
+
+        function openTokenModal(type) {
+            currentTokenSelect = type;
+            const modal = document.getElementById('tokenModal');
+            const tokenList = document.getElementById('tokenList');
+            
+            tokenList.innerHTML = '';
+            tokens.forEach(token => {
+                const tokenItem = document.createElement('div');
+                tokenItem.className = 'token-item';
+                tokenItem.innerHTML = `
+                    <img class="token-icon" src="${token.icon}" alt="${token.symbol}">
+                    <div class="token-info">
+                        <div class="token-name">${token.name}</div>
+                        <div class="token-symbol">${token.symbol}</div>
+                    </div>
+                `;
+                tokenItem.addEventListener('click', () => selectToken(token));
+                tokenList.appendChild(tokenItem);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeTokenModal() {
+            document.getElementById('tokenModal').style.display = 'none';
+        }
+
+        function closeLiquidityModal() {
+            document.getElementById('liquidityModal').style.display = 'none';
+        }
+
+        function selectToken(token) {
+            if (currentTokenSelect) {
+                document.getElementById(`${currentTokenSelect}TokenSymbol`).textContent = token.symbol;
+                document.getElementById(`${currentTokenSelect}TokenIcon`).src = token.icon;
+                document.getElementById(`${currentTokenSelect}TokenName`).textContent = token.name;
+                
+                if (currentTokenSelect === 'from' || currentTokenSelect === 'to') {
+                    document.getElementById('fromAmount').value = '';
+                    document.getElementById('toAmount').value = '';
+                    document.getElementById('swapInfo').style.display = 'none';
+                } else if (currentTokenSelect === 'token1' || currentTokenSelect === 'token2') {
+                    document.getElementById('token1Amount').value = '';
+                    document.getElementById('token2Amount').value = '';
+                    document.getElementById('liquidityInfo').style.display = 'none';
+                }
+                
+                closeTokenModal();
+                updateBalances();
+            }
+        }
+
+        function switchTokens() {
+            const fromTokenSymbol = document.getElementById('fromTokenSymbol').textContent;
+            const fromTokenIcon = document.getElementById('fromTokenIcon').src;
+            const fromTokenName = document.getElementById('fromTokenName').textContent;
+            const toTokenSymbol = document.getElementById('toTokenSymbol').textContent;
+            const toTokenIcon = document.getElementById('toTokenIcon').src;
+            const toTokenName = document.getElementById('toTokenName').textContent;
+            
+            document.getElementById('fromTokenSymbol').textContent = toTokenSymbol;
+            document.getElementById('fromTokenIcon').src = toTokenIcon;
+            document.getElementById('fromTokenName').textContent = toTokenName;
+            document.getElementById('toTokenSymbol').textContent = fromTokenSymbol;
+            document.getElementById('toTokenIcon').src = fromTokenIcon;
+            document.getElementById('toTokenName').textContent = fromTokenName;
+            
+            document.getElementById('fromAmount').value = '';
+            document.getElementById('toAmount').value = '';
+            document.getElementById('swapInfo').style.display = 'none';
+            
+            updateBalances();
+        }
+
+        function toggleSlippageSettings() {
+            const settings = document.getElementById('slippageSettings');
+            settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function calculateLiquidity() {
+            const token1Amount = document.getElementById('token1Amount').value;
+            const token2Amount = document.getElementById('token2Amount').value;
+            
+            if (token1Amount && token2Amount && parseFloat(token1Amount) > 0 && parseFloat(token2Amount) > 0) {
+                document.getElementById('addLiquidityButton').disabled = false;
+                document.getElementById('liquidityInfo').style.display = 'block';
+            } else {
+                document.getElementById('addLiquidityButton').disabled = true;
+                document.getElementById('liquidityInfo').style.display = 'none';
+            }
+        }
+
+        function updateWalletButton(connected) {
+            const button = document.getElementById('connectWallet');
+            if (connected) {
+                button.textContent = 'Connected';
+                button.classList.add('connected');
+            } else {
+                button.textContent = 'Connect Wallet';
+                button.classList.remove('connected');
+            }
+        }
+
+        function showError(message) {
+            const existingError = document.querySelector('.error-message');
+            if (existingError) existingError.remove();
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            document.querySelector('.card').appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const existingSuccess = document.querySelector('.success-message');
+            if (existingSuccess) existingSuccess.remove();
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            
+            document.querySelector('.card').appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Auto relog
+        function checkAutoRelog() {
+            if (localStorage.getItem('autoRelog') === 'true' && userAddress) {
+                // Implementasi auto relog jika diperlukan
+            }
+        }
+
+        // Event handlers untuk perubahan wallet
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                userAddress = null;
+                updateWalletButton(false);
+            } else {
+                userAddress = accounts[0];
+                updateWalletButton(true);
+                updateBalances();
+                updateStakingInfo();
+                updateLiquidityInfo();
+            }
+        }
+
+        function handleChainChanged(chainId) {
+            window.location.reload();
+        }
+
+        // Fungsi untuk menambah token custom
+        async function addCustomToken() {
+            const address = document.getElementById('customTokenAddress').value;
+            
+            if (!address) {
+                showError('Harap masukkan address token');
+                return;
+            }
+            
+            if (tokens.some(token => token.address.toLowerCase() === address.toLowerCase())) {
+                showError('Token sudah ada dalam daftar');
+                return;
+            }
+            
+            try {
+                const tokenContract = new ethers.Contract(address, COZY_ABI, provider);
+                const [symbol, name, decimals] = await Promise.all([
+                    tokenContract.symbol(),
+                    tokenContract.name(),
+                    tokenContract.decimals()
+                ]);
+                
+                const newToken = {
+                    address: address,
+                    symbol: symbol,
+                    name: name,
+                    decimals: decimals,
+                    icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png"
+                };
+                
+                tokens.push(newToken);
+                saveCustomTokens();
+                
+                document.getElementById('customTokenAddress').value = '';
+                showSuccess('Token berhasil ditambahkan!');
+                closeTokenModal();
+                
+            } catch (error) {
+                console.error('Error adding token:', error);
+                showError('Gagal menambahkan token. Pastikan address valid.');
+            }
+        }
+
+        // Simpan token custom ke localStorage
+        function saveCustomTokens() {
+            const customTokens = tokens.filter(token => 
+                token.address !== "0x0000000000000000000000000000000000000000" &&
+                token.address !== COZY_TOKEN_ADDRESS &&
+                token.address !== WXPL_ADDRESS
+            );
+            localStorage.setItem('cozySwapCustomTokens', JSON.stringify(customTokens));
+        }
+
+        // Load token custom dari localStorage
+        function loadCustomTokens() {
+            const storedTokens = localStorage.getItem('cozySwapCustomTokens');
+            if (storedTokens) {
+                const customTokens = JSON.parse(storedTokens);
+                tokens = [...tokens, ...customTokens];
+            }
+        }
+
+        // Set max amount untuk staking
+        async function setMaxStake() {
+            if (!userAddress) return;
+            
+            try {
+                const cozyBalance = await cozyToken.balanceOf(userAddress);
+                document.getElementById('stakeAmount').value = formatBalance(cozyBalance, 18);
+            } catch (error) {
+                console.error('Error getting max stake:', error);
+            }
+        }
+
+        // Set max amount untuk LP staking
+        async function setMaxLpStake() {
+            if (!userAddress) return;
+            
+            try {
+                const lpTokenAddress = await factory.getPair(COZY_TOKEN_ADDRESS, await router.WETH());
+                if (lpTokenAddress !== '0x0000000000000000000000000000000000000000') {
+                    const lpToken = new ethers.Contract(lpTokenAddress, PAIR_ABI, provider);
+                    const lpBalance = await lpToken.balanceOf(userAddress);
+                    document.getElementById('stakeLpAmount').value = formatBalance(lpBalance, 18);
+                }
+            } catch (error) {
+                console.error('Error getting max LP stake:', error);
+            }
+        }
+
+        // Transaction history functions
+        function addToHistory(type, from, to, amount, status) {
+            const transaction = {
+                id: Date.now(),
+                type,
+                from,
+                to,
+                amount,
+                status,
+                timestamp: new Date().toISOString()
+            };
+            
+            transactionHistory.unshift(transaction);
+            saveTransactionHistory();
+            
+            if (document.getElementById('history-tab').classList.contains('active')) {
+                displayTransactionHistory();
+            }
+        }
+
+        function saveTransactionHistory() {
+            localStorage.setItem('cozySwapTransactionHistory', JSON.stringify(transactionHistory));
+        }
+
+        function loadTransactionHistory() {
+            const history = localStorage.getItem('cozySwapTransactionHistory');
+            if (history) {
+                transactionHistory = JSON.parse(history);
+            }
+        }
+
+        function displayTransactionHistory() {
+            const historyContainer = document.getElementById('transactionHistory');
+            
+            if (transactionHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">No transactions yet</div>';
+                return;
+            }
+            
+            historyContainer.innerHTML = '';
+            
+            transactionHistory.slice(0, 10).forEach(tx => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                let typeText = '';
+                switch(tx.type) {
+                    case 'swap':
+                        typeText = `Swap ${tx.from} → ${tx.to}`;
+                        break;
+                    case 'add_liquidity':
+                        typeText = 'Add Liquidity';
+                        break;
+                    case 'remove_liquidity':
+                        typeText = 'Remove Liquidity';
+                        break;
+                    case 'stake':
+                        typeText = 'Stake COZY';
+                        break;
+                    case 'unstake':
+                        typeText = 'Unstake COZY';
+                        break;
+                    case 'stake_lp':
+                        typeText = 'Stake LP';
+                        break;
+                    case 'unstake_lp':
+                        typeText = 'Unstake LP';
+                        break;
+                    case 'claim_rewards':
+                        typeText = 'Claim Rewards';
+                        break;
+                    case 'claim_lp_rewards':
+                        typeText = 'Claim LP Rewards';
+                        break;
+                    default:
+                        typeText = tx.type;
+                }
+                
+                historyItem.innerHTML = `
+                    <div>
+                        <div class="history-type">${typeText}</div>
+                        <div class="history-details">${tx.amount} ${tx.from}</div>
+                    </div>
+                    <div class="history-status ${tx.status === 'success' ? 'status-success' : tx.status === 'pending' ? 'status-pending' : 'status-failed'}">
+                        ${tx.status}
+                    </div>
+                `;
+                
+                historyContainer.appendChild(historyItem);
+            });
+        }
+    </script>
+</body>
+</html>
